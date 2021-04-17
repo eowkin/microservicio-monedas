@@ -47,6 +47,7 @@ public class MonedaServiceImpl implements IMonedaService {
 	
 	@Override
 	public MonedaDtoResponse save(MonedasRequest monedasRequest) {
+		log.info("Inicio del Guardar");
 		Moneda obj = new Moneda();
 		MonedaDtoResponse response = new MonedaDtoResponse();
 		Resultado resultado = new Resultado();

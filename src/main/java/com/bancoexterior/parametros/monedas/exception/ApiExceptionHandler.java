@@ -46,8 +46,7 @@ public class ApiExceptionHandler {
             org.springframework.web.bind.MissingRequestHeaderException.class,
             org.springframework.web.bind.MissingServletRequestParameterException.class,
             org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class,
-            org.springframework.http.converter.HttpMessageNotReadableException.class,
-            org.springframework.web.bind.MissingRequestHeaderException.class
+            org.springframework.http.converter.HttpMessageNotReadableException.class
             
             
             

@@ -245,7 +245,7 @@ public class MonedaController {
 	@ResponseBody
 	public ResponseEntity<Object> crearMoneda(@Valid @RequestBody MonedasRequest monedasRequest, BindingResult result, HttpServletRequest requestHTTP, WebRequest webRequest) {
 		
-		webRequest.setAttribute("monedasRequest", monedasRequest, RequestAttributes.SCOPE_REQUEST);
+		
 		log.info(Servicios.MONEDASSERVICEI);
 		log.info("monedasRequest: " + monedasRequest);
 		if (result.hasErrors()) {
@@ -273,7 +273,14 @@ public class MonedaController {
 			log.info("existe");
 			requestHTTP.setAttribute("codigo", "2001");
 			webRequest.setAttribute("codigo", "2001", 0);
-			throw new FieldAlreadyExistException("codMoneda: "+monedasRequest.getMonedasDtoRequest().getCodMoneda());
+			webRequest.setAttribute("monedasRequest", monedasRequest, RequestAttributes.SCOPE_REQUEST);
+			ResponseBad responseBad = new ResponseBad();
+			HttpStatus httpStatusError = Utils.getHttpStatus("2001");
+			log.info("httpStatusError: "+httpStatusError);
+			responseBad.getResultadoBAD().setCodigo("2001");
+	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+"2001","2001"));
+			return new ResponseEntity(responseBad, httpStatusError);
+			//throw new FieldAlreadyExistException("codMoneda: "+monedasRequest.getMonedasDtoRequest().getCodMoneda());
 		}else {
 			monedaService.gestionCrearMoneda(monedasRequest, requestHTTP);
 			//monedaDtoResponse = monedaService.save(monedasRequest);
@@ -356,13 +363,75 @@ public class MonedaController {
 	
 	
 	
-	
-	@GetMapping()
-	public List<Moneda> findAll() {
+	@PostMapping(path = Servicios.MONEDASURLV1+"/basico")
+	public List<Moneda> findAll(@Valid @RequestBody DatosRequestConsulta datosRequestConsulta, BindingResult result) {
 		return monedaService.findAll();
 	}
 
-	@GetMapping("/all")
+	
+	@GetMapping(path = Servicios.MONEDASURLV1+"/basico/{codMoneda}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> findById(@Valid @RequestBody DatosRequestConsulta datosRequestConsulta, BindingResult result, @PathVariable String codMoneda) {
+		
+		
+		if (result.hasErrors()) {
+			
+			ResponseBad responseBad = new ResponseBad();	
+			List<String> errors = result
+	                .getFieldErrors()
+	                .stream()
+	                .map(FieldError::getDefaultMessage)
+	                .collect(Collectors.toList());
+	    	log.info("errors: "+errors);
+			
+			HttpStatus httpStatusError = Utils.getHttpStatus(errors.get(0));
+			log.info("httpStatusError: "+httpStatusError);
+			responseBad.getResultadoBAD().setCodigo(errors.get(0));
+	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+errors.get(0),errors.get(0)));
+			return new ResponseEntity(responseBad, httpStatusError);
+
+		}
+		
+		MonedaDtoResponse monedaDtoResponse = new MonedaDtoResponse();
+		monedaDtoResponse = monedaService.get(codMoneda);
+		
+		log.info("monedaDtoResponse: "+monedaDtoResponse);
+		log.info(Servicios.MONEDASCONTROLLERF);		
+		return ResponseEntity.ok(monedaDtoResponse);
+	}
+	
+	@PostMapping(path = Servicios.MONEDASURLV1+"/basico/{codMoneda}",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> findByIdPost(@Valid @RequestBody DatosRequestConsulta datosRequestConsulta, BindingResult result, @PathVariable String codMoneda) {
+		
+		log.info("finByIdPost");
+		log.info("datosRequestConsulta"+datosRequestConsulta);
+		if (result.hasErrors()) {
+			
+			ResponseBad responseBad = new ResponseBad();	
+			List<String> errors = result
+	                .getFieldErrors()
+	                .stream()
+	                .map(FieldError::getDefaultMessage)
+	                .collect(Collectors.toList());
+	    	log.info("errors: "+errors);
+			
+			HttpStatus httpStatusError = Utils.getHttpStatus(errors.get(0));
+			log.info("httpStatusError: "+httpStatusError);
+			responseBad.getResultadoBAD().setCodigo(errors.get(0));
+	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+errors.get(0),errors.get(0)));
+			return new ResponseEntity(responseBad, httpStatusError);
+
+		}
+		
+		MonedaDtoResponse monedaDtoResponse = new MonedaDtoResponse();
+		monedaDtoResponse = monedaService.get(codMoneda);
+		
+		log.info("monedaDtoResponse: "+monedaDtoResponse);
+		log.info(Servicios.MONEDASCONTROLLERF);		
+		return ResponseEntity.ok(monedaDtoResponse);
+	}
+	
+	
+	@GetMapping(path = Servicios.MONEDASURLV1+"/all", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public MonedaDtoResponse getAll() {
 		return monedaService.getAll();
 	}
