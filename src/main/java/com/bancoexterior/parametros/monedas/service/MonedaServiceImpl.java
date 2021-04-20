@@ -1,7 +1,6 @@
 package com.bancoexterior.parametros.monedas.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import com.bancoexterior.parametros.monedas.config.Codigos.CodRespuesta;
 import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
@@ -30,9 +29,8 @@ import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 import com.bancoexterior.parametros.monedas.dto.TasaDto;
 import com.bancoexterior.parametros.monedas.response.Resultado;
 import com.bancoexterior.parametros.monedas.entities.Moneda;
+import com.bancoexterior.parametros.monedas.interfase.IRegistrarAuditoriaService;
 import com.bancoexterior.parametros.monedas.model.RegistrarAuditoriaRequest;
-import com.bancoexterior.parametros.monedas.repository.ILimitesGeneralesRepository;
-//import com.bancoexterior.tesoreria.ve.model.RegistrarAuditoriaRequest;
 import com.bancoexterior.parametros.monedas.repository.IMonedaRepository;
 import com.bancoexterior.parametros.monedas.util.Mapper;
 
@@ -47,6 +45,9 @@ public class MonedaServiceImpl implements IMonedaService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private IRegistrarAuditoriaService registrarA ;
 
 	@Autowired
 	private Mapper mapper;
@@ -154,113 +155,6 @@ public class MonedaServiceImpl implements IMonedaService {
 		}
 	}
 	
-	@Override
-	public MonedaDtoResponse getAll() {
-		MonedaDtoResponse response = new MonedaDtoResponse();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-		List<MonedaDto> listMonedasDto = repo.getAll();
-		
-		if (listMonedasDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		} else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		
-		response.setResultado(resultado);
-		response.setListMonedasDto(repo.getAll());
-
-		return response;
-	}
-
-	@Override
-	public MonedaDtoResponse findAllDtoResponse() {
-		MonedaDtoResponse response = new MonedaDtoResponse();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-		List<MonedaDto> listMonedasDto = repo.getAll();
-		
-		if (listMonedasDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		} else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		
-		response.setResultado(resultado);
-		response.setListMonedasDto(repo.getAll());
-
-		return response;
-	}
-	
-	@Override
-	public MonedaDtoResponse getMonedasByParameter(String codMoneda, boolean flagActivo) {
-		MonedaDtoResponse response = new MonedaDtoResponse();
-		Resultado resultado = new Resultado();
-		log.info("getMonedasByParameter");
-		log.info("codMoneda: "+codMoneda);
-		log.info("flagActivo: "+flagActivo);
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-		List<MonedaDto> listMonedasDto = repo.getMonedaByidAndFlag(codMoneda, flagActivo);
-		
-		if (listMonedasDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		} else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		
-		response.setResultado(resultado);
-		response.setListMonedasDto(listMonedasDto);
-
-		return response;
-	}
-	
-	@Override
-	public MonedaDtoResponse getMonedasByFlagActivo(boolean flagActivo) {
-		MonedaDtoResponse response = new MonedaDtoResponse();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-		List<MonedaDto> listMonedasDto = repo.getMonedaByFlagActivo(flagActivo);
-		
-		if (listMonedasDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		} else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		
-		response.setResultado(resultado);
-		response.setListMonedasDto(repo.getAll());
-
-		return response;
-	}
-	
-	
-	@Override
-	public MonedaDtoResponse get(String codMoneda) {
-		MonedaDtoResponse response = new MonedaDtoResponse();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(Constantes.BLANK);
-
-		List<MonedaDto> listMonedasDto = repo.getMonedaByid(codMoneda);
-		if (listMonedasDto.isEmpty()) {
-			resultado.setCodigo(CodRespuesta.C0001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		} else {
-			resultado.setDescripcion(env.getProperty(Constantes.RES + resultado.getCodigo(), resultado.getCodigo()));
-		}
-		response.setResultado(resultado);
-		response.setListMonedasDto(repo.getMonedaByid(codMoneda));
-
-		return response;
-	}
 	
 	@Override
 	public List<MonedaDto> findAllMonedasDto(MonedaDto monedaDto) {
@@ -289,25 +183,7 @@ public class MonedaServiceImpl implements IMonedaService {
 		return listMonedasDto;
 	}
 
-	@Override
-	public List<Moneda> findAll() {
-		return repo.findAll();
-	}
-
-	@Override
-	public List<MonedaDto> findAllGlobalMapper() {
-
-		List<Moneda> listMonedas = repo.findAll();
-		List<MonedaDto> listMonedasDto = new ArrayList<MonedaDto>();
-
-		for (Moneda moneda : listMonedas) {
-
-			MonedaDto monedaDto = mapper.map(moneda, MonedaDto.class);
-			listMonedasDto.add(monedaDto);
-		}
-
-		return listMonedasDto;
-	}
+	
 
 	@Override
 	public MonedaDto findById(String codMoneda) {
@@ -372,52 +248,7 @@ public class MonedaServiceImpl implements IMonedaService {
 		log.info(Servicios.MONEDASCONSULTASERVICEF);
 		return monedaDtoResponse;
 	}
-	/*
-	@Override
-	public Resultado gestionMoneda(MonedasRequest request, HttpServletRequest requestHTTP) {
-		log.info(Servicios.MONEDASSERVICEI);
-		
-		Resultado response = new Resultado();
-		Resultado resultadoV ;
-		String codigo ;
-		String errorM ;
-		//String microservicio = request.getFlagActualiza() == 0 ? Servicios.MONEDAS:Servicios.MONEDASACTUALIZAR;
-		String microservicio = Servicios.MONEDAS;
-		//MonedasBD monedas = new MonedasBD();
-		//List<MonedaDto> monedasBDg;
-		RegistrarAuditoriaRequest reAU = null;
-		//monedas.setCodMonedaBD(request.getMonedaDatosMR().getCodMonedaMD());
-		//monedas.setCodMonedaBD(request.getMonedasDtoRequest().getCodMoneda());
-		try {
-			
-			reAU = new RegistrarAuditoriaRequest(request, microservicio,requestHTTP);
-			
-			
-			
-			codigo = resultadoV.getCodigo();
-			errorM = resultadoV.getDescripcion();
-			
-		} catch (Exception e) {
-			log.error(e);
-			codigo = CodRespuesta.CME6000;
-			errorM = Constantes.EXC+e;
-		}
-		
-		response.setCodigo(codigo);
-		response.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
-		
-		if(reAU != null) {
-			reAU.setIdCliente(Constantes.RIF);
-			reAU.setCedula(Constantes.CEDULA);
-			reAU.setTelefono(Constantes.TELEFONO);
-			reAU.setIdCanal("8");
-			registrarAuditoriaBD(reAU, response, errorM);
-		}
-		
-		LOGGER.info(Servicios.MONEDASSERVICEF);
-		return response;
-	}*/
-
+	
 	
 
 	/**
@@ -486,21 +317,29 @@ public class MonedaServiceImpl implements IMonedaService {
 			resultado.setCodigo(CodRespuesta.C0001);
 			return resultado;
 		}
-
-		/*
-	    if(monedasBD.get(0).getCodMonedaBD().equalsIgnoreCase(Constantes.SERROR)) {
-	    	resultado.setCodigo(CodRespuesta.CME6002);
-	    	resultado.setDescripcion(monedasBD.get(0).getDescripcionBD());
-	    	 LOGGER.error(resultado);
-	    	return resultado;
-	    }*/
-
 	    
 	    log.info(""+resultado);
 		return resultado;
 		
 	}
 
+	/**
+     * Nombre:                 registrarAuditoriaBD
+     * Descripcion:            Registrar Auditoria en Web Service
+     *
+     * @param  req  Objeto RegistrarAuditoriaRequest
+     * @param  codigo   Codigo de respuesta
+     * @param descripcion Descripcion del resultado
+     * @version 1.0
+     * @author Wilmer Vieira
+	 * @since 02/03/21
+     */
+	private void registrarAuditoriaBD(RegistrarAuditoriaRequest registrarAu,Resultado response, String errorAdicional) {
+			
+		        registrarA.registrarAuditoria(registrarAu, response.getCodigo(),response.getDescripcion(),errorAdicional);	
+	}
+	
+	
 	@Override
 	public Resultado gestionCrearMoneda(MonedasRequest request, HttpServletRequest requestHTTP) {
 		
@@ -520,6 +359,8 @@ public class MonedaServiceImpl implements IMonedaService {
 			
 			response = this.crear(request);
 			log.info("response: "+response);
+			codigo = response.getCodigo();
+			errorM = response.getDescripcion();
 			
 			if(response.getCodigo().equals(CodRespuesta.C0000)) {
 				if(!request.getMonedasDtoRequest().getCodMoneda().equals(codmonedabs)) {
@@ -551,6 +392,13 @@ public class MonedaServiceImpl implements IMonedaService {
 			
 		}
 		
+		if(reAU != null) {
+			reAU.setIdCliente(Constantes.RIF);
+			reAU.setCedula(Constantes.CEDULA);
+			reAU.setTelefono(Constantes.TELEFONO);
+			reAU.setIdCanal("8");
+			registrarAuditoriaBD(reAU, response, errorM);
+		}
 		
 		return response;
 	}
@@ -562,7 +410,7 @@ public class MonedaServiceImpl implements IMonedaService {
 		Resultado response = new Resultado();
 		String codigo ;
 		String errorM ;
-		String microservicio =  Servicios.MONEDAS;
+		String microservicio =  Servicios.MONEDASACTUALIZAR;
 		RegistrarAuditoriaRequest reAU = null;
 		
 		
@@ -591,7 +439,8 @@ public class MonedaServiceImpl implements IMonedaService {
 			response = this.actualizar(monedaRequestActualizar);
 			log.info("response: "+response);
 			
-			
+			codigo = response.getCodigo();
+			errorM = response.getDescripcion();
 			
 						
 		} catch (Exception e) {
@@ -601,22 +450,14 @@ public class MonedaServiceImpl implements IMonedaService {
 			
 		}
 		
-		
+		if(reAU != null) {
+			reAU.setIdCliente(Constantes.RIF);
+			reAU.setCedula(Constantes.CEDULA);
+			reAU.setTelefono(Constantes.TELEFONO);
+			reAU.setIdCanal("8");
+			registrarAuditoriaBD(reAU, response, errorM);
+		}
 		return response;
 
 	}
-
-	
-
-	
-
-	
-
-	
-
-	
-	
-	
-	
-
 }

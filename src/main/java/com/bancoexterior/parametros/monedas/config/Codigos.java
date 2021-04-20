@@ -5,6 +5,14 @@ import lombok.Data;
 public class Codigos {
 
 	@Data
+	public class Ambientes{
+		
+		public static final String DESARROLLO = "des";
+		public static final String CALIDAD    = "qa";
+		public static final String PRODUCCION = "pro";
+	}
+	
+	@Data
 	public class CodRespuesta{
 		//ok
 		public static final String C0000 = "0000";
@@ -27,6 +35,7 @@ public class Codigos {
 		public static final String CDE1010 = "1010";
 		
 		//BD
+		public static final String CME2000 = "2000";
 		public static final String CME2001 = "2001";
 		
 		////GENERAL
@@ -78,6 +87,9 @@ public class Codigos {
 		public static final String APP_JSON                           = "application/json";
 		public static final String EXC                                = "Exc:";
 		public static final String ERROR                              = "@@Error";
+		public static final String RIF                                = "J000000000";
+		public static final String CEDULA                             = "V00000000";
+		public static final String TELEFONO                           = "00000000000000";
 	}
 	
 	

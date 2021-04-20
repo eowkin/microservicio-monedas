@@ -27,7 +27,7 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 		log.info("Comenzando a inicializar limites Generales");
 		
 		try {
-			//List<LimitesGenerales> listLimites = new ArrayList<LimitesGenerales>();
+			List<LimitesGenerales> listLimites = new ArrayList<LimitesGenerales>();
 			String codMoneda = limitesGeneralesDto.getCodMoneda();
 			log.info(codMoneda);
 			LimitesGeneralesPk id = new LimitesGeneralesPk();
@@ -45,73 +45,73 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 			limites.setMontoBanco(BigDecimal.ZERO);
 			limites.setCodUsuario(limitesGeneralesDto.getCodUsuario());
 			limites.setFlagActivo(false);
-			//listLimites.add(limites);
-			log.info("limites: "+limites);
-		
+			listLimites.add(limites);
 			
 		
-			repo.save(limites);
+			LimitesGeneralesPk id1 = new LimitesGeneralesPk();
+			id1.setCodMoneda(codMoneda);
+			id1.setTipoTransaccion("V");
+			id1.setNaturaleza("J");
+			
+			LimitesGenerales limites1 = new LimitesGenerales();
+			
+			limites1.setId(id1);
+			limites1.setMontoBanco(BigDecimal.ZERO);
+			limites1.setMontoDiario(BigDecimal.ZERO);
+			limites1.setMontoMax(BigDecimal.ZERO);
+			limites1.setMontoMensual(BigDecimal.ZERO);
+			limites1.setMontoMin(BigDecimal.ZERO);
+			limites1.setMontoTope(BigDecimal.ZERO);
+			limites1.setCodUsuario(limitesGeneralesDto.getCodUsuario());
+			limites1.setFlagActivo(false);
+			
+			listLimites.add(limites1);
+			
+			LimitesGeneralesPk id2 = new LimitesGeneralesPk();
+			id2.setCodMoneda(codMoneda);
+			id2.setTipoTransaccion("C");
+			id2.setNaturaleza("N");
+			
+			LimitesGenerales limites2 = new LimitesGenerales();
+			limites2.setId(id2);
+			limites2.setMontoBanco(BigDecimal.ZERO);
+			limites2.setMontoDiario(BigDecimal.ZERO);
+			limites2.setMontoMax(BigDecimal.ZERO);
+			limites2.setMontoMensual(BigDecimal.ZERO);
+			limites2.setMontoMin(BigDecimal.ZERO);
+			limites2.setMontoTope(BigDecimal.ZERO);
+			limites2.setCodUsuario(limitesGeneralesDto.getCodUsuario());
+			limites2.setFlagActivo(false);
+			
+			listLimites.add(limites2);
+			
+			LimitesGeneralesPk id3 = new LimitesGeneralesPk();
+			id3.setCodMoneda(codMoneda);
+			id3.setTipoTransaccion("V");
+			id3.setNaturaleza("N");
+			
+			LimitesGenerales limites3 = new LimitesGenerales();
+			limites3.setId(id3);
+			limites3.setMontoBanco(BigDecimal.ZERO);
+			limites3.setMontoDiario(BigDecimal.ZERO);
+			limites3.setMontoMax(BigDecimal.ZERO);
+			limites3.setMontoMensual(BigDecimal.ZERO);
+			limites3.setMontoMin(BigDecimal.ZERO);
+			limites3.setMontoTope(BigDecimal.ZERO);
+			limites3.setCodUsuario(limitesGeneralesDto.getCodUsuario());
+			limites3.setFlagActivo(false);
+			
+			listLimites.add(limites3);
+		
+			repo.saveAll(listLimites);
 		} catch (Exception e) {
 			log.info("error inicializando");
 			log.info("e : "+e);
 			
 		}
-		/*
-		LimitesGeneralesPk id1 = new LimitesGeneralesPk();
-		id1.setCodMoneda(codMoneda);
-		id1.setTipoTransaccion("V");
-		id1.setNaturaleza("J");
 		
-		LimitesGenerales limites1 = new LimitesGenerales();
 		
-		limites1.setId(id1);
-		limites1.setMontoBanco(BigDecimal.ZERO);
-		limites1.setMontoDiario(BigDecimal.ZERO);
-		limites1.setMontoMax(BigDecimal.ZERO);
-		limites1.setMontoMensual(BigDecimal.ZERO);
-		limites1.setMontoMin(BigDecimal.ZERO);
-		limites1.setMontoTope(BigDecimal.ZERO);
-		limites1.setCodUsuario(limitesGeneralesDto.getCodUsuario());
-		limites1.setFlagActivo(false);
 		
-		listLimites.add(limites1);
-		
-		LimitesGeneralesPk id2 = new LimitesGeneralesPk();
-		id2.setCodMoneda(codMoneda);
-		id2.setTipoTransaccion("C");
-		id2.setNaturaleza("N");
-		
-		LimitesGenerales limites2 = new LimitesGenerales();
-		limites2.setId(id2);
-		limites2.setMontoBanco(BigDecimal.ZERO);
-		limites2.setMontoDiario(BigDecimal.ZERO);
-		limites2.setMontoMax(BigDecimal.ZERO);
-		limites2.setMontoMensual(BigDecimal.ZERO);
-		limites2.setMontoMin(BigDecimal.ZERO);
-		limites2.setMontoTope(BigDecimal.ZERO);
-		limites2.setCodUsuario(limitesGeneralesDto.getCodUsuario());
-		limites2.setFlagActivo(false);
-		
-		listLimites.add(limites2);
-		
-		LimitesGeneralesPk id3 = new LimitesGeneralesPk();
-		id3.setCodMoneda(codMoneda);
-		id3.setTipoTransaccion("V");
-		id3.setNaturaleza("N");
-		
-		LimitesGenerales limites3 = new LimitesGenerales();
-		limites3.setId(id3);
-		limites3.setMontoBanco(BigDecimal.ZERO);
-		limites3.setMontoDiario(BigDecimal.ZERO);
-		limites3.setMontoMax(BigDecimal.ZERO);
-		limites3.setMontoMensual(BigDecimal.ZERO);
-		limites3.setMontoMin(BigDecimal.ZERO);
-		limites3.setMontoTope(BigDecimal.ZERO);
-		limites3.setCodUsuario(limitesGeneralesDto.getCodUsuario());
-		limites3.setFlagActivo(false);
-		
-		listLimites.add(limites3);
-		*/
 		
 		
 		
