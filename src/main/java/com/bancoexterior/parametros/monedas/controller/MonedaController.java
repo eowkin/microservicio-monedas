@@ -17,6 +17,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,12 +26,14 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import com.bancoexterior.parametros.monedas.response.ResponseBad;
+import com.bancoexterior.parametros.monedas.response.Resultado;
 import com.bancoexterior.parametros.monedas.config.Codigos.CodRespuesta;
 import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
 import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
 import com.bancoexterior.parametros.monedas.dto.DatosRequestConsulta;
 import com.bancoexterior.parametros.monedas.dto.MonedaDto;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponse;
+import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponseActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 import com.bancoexterior.parametros.monedas.entities.Moneda;
 import com.bancoexterior.parametros.monedas.exception.FieldAlreadyExistException;
@@ -243,7 +246,7 @@ public class MonedaController {
 	
 	@PostMapping(path=Servicios.MONEDASURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Object> crearMoneda(@Valid @RequestBody MonedasRequest monedasRequest, BindingResult result, HttpServletRequest requestHTTP, WebRequest webRequest) {
+	public ResponseEntity<Object> crearMoneda(@Valid @RequestBody MonedasRequest monedasRequest, BindingResult result, HttpServletRequest requestHTTP) {
 		
 		
 		log.info(Servicios.MONEDASSERVICEI);
@@ -262,43 +265,125 @@ public class MonedaController {
 			log.info("httpStatusError: "+httpStatusError);
 			responseBad.getResultadoBAD().setCodigo(errors.get(0));
 	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+errors.get(0),errors.get(0)));
-			return new ResponseEntity(responseBad, httpStatusError);
+			return new ResponseEntity<>(responseBad, httpStatusError);
 
 		}
 		
-		MonedaDtoResponse monedaDtoResponse = new MonedaDtoResponse();
-		log.info("monedaService.findById(monedaDtoRequest.getCodMoneda()) : "+monedaService.findById(monedasRequest.getMonedasDtoRequest().getCodMoneda()));
+		MonedaDtoResponseActualizar response = new MonedaDtoResponseActualizar();
+		Resultado resultado;
+		HttpStatus estatusCM;
 		
 		if(monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
 			log.info("existe");
-			requestHTTP.setAttribute("codigo", "2001");
-			webRequest.setAttribute("codigo", "2001", 0);
-			webRequest.setAttribute("monedasRequest", monedasRequest, RequestAttributes.SCOPE_REQUEST);
+			//requestHTTP.setAttribute("codigo", "2001");
+			//webRequest.setAttribute("codigo", "2001", 0);
+			//webRequest.setAttribute("monedasRequest", monedasRequest, RequestAttributes.SCOPE_REQUEST);
 			ResponseBad responseBad = new ResponseBad();
 			HttpStatus httpStatusError = Utils.getHttpStatus("2001");
 			log.info("httpStatusError: "+httpStatusError);
 			responseBad.getResultadoBAD().setCodigo("2001");
 	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+"2001","2001"));
-			return new ResponseEntity(responseBad, httpStatusError);
+			return new ResponseEntity<>(responseBad, httpStatusError);
 			//throw new FieldAlreadyExistException("codMoneda: "+monedasRequest.getMonedasDtoRequest().getCodMoneda());
 		}else {
-			monedaService.gestionCrearMoneda(monedasRequest, requestHTTP);
+			resultado = monedaService.gestionCrearMoneda(monedasRequest, requestHTTP);
+			log.info("resultado de regrso: "+resultado);
+			estatusCM = Utils.getHttpStatus(resultado.getCodigo().trim());
+			log.info("[==== FIN Convenio n° 1 Monedas - Controller ====]");
+			log.info("estatusCM: "+estatusCM);
+			log.info("response: "+response);
+			log.info("[==== FIN Convenio n° 1 Monedas - Controller ====]");
+			response.setResultado(resultado);
+			if(resultado.getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
+				log.info("se fue por aqui, buena respuesta");
+				return new ResponseEntity<>(response,estatusCM);
+			}else {
+				log.info("se fue por aqui");
+				return new ResponseEntity<>(response.getResultado(),estatusCM);
+			}
+			
 			//monedaDtoResponse = monedaService.save(monedasRequest);
 		}
 			
 		
-		/*
-		if(monedaService.findById(monedasRequest.getMonedasDtoRequest().getCodMoneda()) == null) {
-			log.info("No existe ese codigo, se puede hacer el insert");
-			monedaDtoResponse = monedaService.save(monedasRequest);
-			
-		}else {
-			log.info("Existe en Base de datos ese Codigo");
-		}*/
 		
-		return  ResponseEntity.status( HttpStatus.CREATED).body(monedaDtoResponse);
+		
 		
 	}
+	
+	
+	@PutMapping(path=Servicios.MONEDASURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Object> actualizarMoneda(@Valid @RequestBody MonedasRequest monedasRequest, BindingResult result, HttpServletRequest requestHTTP) {
+		
+		
+		log.info(Servicios.MONEDASSERVICEI);
+		log.info("monedasRequest: " + monedasRequest);
+		if (result.hasErrors()) {
+			
+			ResponseBad responseBad = new ResponseBad();	
+			List<String> errors = result
+	                .getFieldErrors()
+	                .stream()
+	                .map(FieldError::getDefaultMessage)
+	                .collect(Collectors.toList());
+	    	log.info("errors: "+errors);
+			
+			HttpStatus httpStatusError = Utils.getHttpStatus(errors.get(0));
+			log.info("httpStatusError: "+httpStatusError);
+			responseBad.getResultadoBAD().setCodigo(errors.get(0));
+	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+errors.get(0),errors.get(0)));
+			return new ResponseEntity<>(responseBad, httpStatusError);
+
+		}
+		
+		MonedaDtoResponseActualizar response = new MonedaDtoResponseActualizar();
+		Resultado resultado;
+		HttpStatus estatusCM;
+		
+		if(!monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
+			log.info("no existe");
+			//requestHTTP.setAttribute("codigo", "2001");
+			//webRequest.setAttribute("codigo", "2001", 0);
+			//webRequest.setAttribute("monedasRequest", monedasRequest, RequestAttributes.SCOPE_REQUEST);
+			ResponseBad responseBad = new ResponseBad();
+			HttpStatus httpStatusError = Utils.getHttpStatus("2000");
+			log.info("httpStatusError: "+httpStatusError);
+			responseBad.getResultadoBAD().setCodigo("2000");
+	    	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES+"2000","2000"));
+			return new ResponseEntity<>(responseBad, httpStatusError);
+			//throw new FieldAlreadyExistException("codMoneda: "+monedasRequest.getMonedasDtoRequest().getCodMoneda());
+		}else {
+			resultado = monedaService.gestionActualizarMoneda(monedasRequest, requestHTTP);
+			log.info("resultado de regrso: "+resultado);
+			estatusCM = Utils.getHttpStatus(resultado.getCodigo().trim());
+			log.info("[==== FIN Convenio n° 1 Monedas - Controller ====]");
+			log.info("estatusCM: "+estatusCM);
+			log.info("response: "+response);
+			log.info("[==== FIN Convenio n° 1 Monedas - Controller ====]");
+			response.setResultado(resultado);
+			if(resultado.getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
+				log.info("se fue por aqui, buena respuesta");
+				return new ResponseEntity<>(response,estatusCM);
+			}else {
+				log.info("se fue por aqui");
+				return new ResponseEntity<>(response.getResultado(),estatusCM);
+			}
+			
+			//monedaDtoResponse = monedaService.save(monedasRequest);
+		}
+			
+		
+		
+		
+		
+	}
+	
+	
+	
+	
+	
+	
 	
 	@PostMapping(path=Servicios.PRUEBAMONEDASURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody

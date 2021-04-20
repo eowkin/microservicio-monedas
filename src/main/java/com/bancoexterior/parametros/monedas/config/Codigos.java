@@ -31,6 +31,7 @@ public class Codigos {
 		
 		////GENERAL
     	public static final String CME6000 = "6000";
+    	public static final String CME6001 = "6001";
 		public static final String CME6002 = "6002";
 		
 	}
@@ -112,7 +113,8 @@ public class Codigos {
 		public static final String MONEDASACTUALIZAR  = "Convenio1-Moneda Actualizacion";
 		public static final String MONEDASCONTROLLERI = "[==== INICIO Convenio n° 1 Monedas - Controller ====]";
 		public static final String MONEDASCONTROLLERF = "[==== FIN Convenio n° 1 Monedas - Controller ====]";
-		public static final String MONEDASSERVICEI    = "==== INICIO Convenio 1 - Monedas ====";
+		public static final String MONEDASSERVICEI    = "==== INICIO Convenio 1 - Monedas  ====";
+		public static final String MONEDASSERVICEIACTUALIZAR    = "==== INICIO Convenio 1 - Monedas-Service-Actualizar  ====";
 		public static final String MONEDASSERVICEF    = "==== FIN Convenio 1 - Monedas ====";
 		
 		//Consultas
