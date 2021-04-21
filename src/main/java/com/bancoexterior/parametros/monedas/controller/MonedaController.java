@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-//@RequestMapping("/api/monedas")
 @RequestMapping("${microservicio.path.pre}" + "${microservicio.ambiente}")
 public class MonedaController {
 
