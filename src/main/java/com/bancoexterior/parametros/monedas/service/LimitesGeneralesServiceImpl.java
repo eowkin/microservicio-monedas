@@ -4,32 +4,36 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
 import com.bancoexterior.parametros.monedas.dto.LimitesGeneralesDto;
 import com.bancoexterior.parametros.monedas.entities.LimitesGenerales;
 import com.bancoexterior.parametros.monedas.entities.LimitesGeneralesPk;
 import com.bancoexterior.parametros.monedas.repository.ILimitesGeneralesRepository;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
+
 @Service
 public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 
+	private static final Logger LOGGER = LogManager.getLogger(LimitesGeneralesServiceImpl.class);
+	
 	@Autowired
 	private ILimitesGeneralesRepository repo;
 	
 	
 	@Override
 	public void inicializarLimitesGeneralesMoneda(LimitesGeneralesDto limitesGeneralesDto) {
-		log.info("Comenzando a inicializar limites Generales");
+		LOGGER.info(Servicios.MONEDASSERVICEILIMITES);
 		
 		try {
 			List<LimitesGenerales> listLimites = new ArrayList<LimitesGenerales>();
 			String codMoneda = limitesGeneralesDto.getCodMoneda();
-			log.info(codMoneda);
 			LimitesGeneralesPk id = new LimitesGeneralesPk();
 			id.setCodMoneda(codMoneda);
 			id.setTipoTransaccion("C");
@@ -104,18 +108,12 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 			listLimites.add(limites3);
 		
 			repo.saveAll(listLimites);
+			LOGGER.info(Servicios.MONEDASSERVICEFLIMITES);
 		} catch (Exception e) {
-			log.info("error inicializando");
-			log.info("e : "+e);
+			LOGGER.error("Error inicializando-Limites");
+			LOGGER.error(e);
 			
 		}
-		
-		
-		
-		
-		
-		
-		
 		
 		
 	}

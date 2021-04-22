@@ -1,25 +1,30 @@
 package com.bancoexterior.parametros.monedas.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
 import com.bancoexterior.parametros.monedas.dto.TasaDto;
 import com.bancoexterior.parametros.monedas.entities.Tasa;
 import com.bancoexterior.parametros.monedas.entities.TasaPk;
 import com.bancoexterior.parametros.monedas.repository.ITasaRepository;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
+
 @Service
 public class TasaServiceImple implements ITasaService{
 
+	private static final Logger LOGGER = LogManager.getLogger(TasaServiceImple.class);
+	
 	@Autowired
 	private ITasaRepository repo;
 	
 	@Override
 	public void inicializarTasaMoneda(TasaDto tasaDto) {
-		
+		LOGGER.info(Servicios.MONEDASSERVICEITASAS);
 		try {
 			TasaPk id = new TasaPk();
 			id.setCodMonedaOrigen(tasaDto.getCodMonedaOrigen());
@@ -31,9 +36,10 @@ public class TasaServiceImple implements ITasaService{
 			obj.setMontoTasa(tasaDto.getMontoTasa());
 			repo.save(obj);
 			
-			
+			LOGGER.info(Servicios.MONEDASSERVICEFTASAS);
 		} catch (Exception e) {
-			log.info("NO se puedo inicializar la Tasa de la moneda");
+			LOGGER.error("Error inicializando-Limites");
+			LOGGER.error(e);
 		}
 		
 		

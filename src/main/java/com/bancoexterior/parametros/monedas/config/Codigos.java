@@ -126,8 +126,17 @@ public class Codigos {
 		public static final String MONEDASCONTROLLERI = "[==== INICIO Convenio n° 1 Monedas - Controller ====]";
 		public static final String MONEDASCONTROLLERF = "[==== FIN Convenio n° 1 Monedas - Controller ====]";
 		public static final String MONEDASSERVICEI    = "==== INICIO Convenio 1 - Monedas  ====";
+		public static final String MONEDASSERVICEICONSULTA    = "==== INICIO Convenio 1 - Monedas-Service-Consulta  ====";
+		public static final String MONEDASSERVICEFCONSULTA    = "==== FIN Convenio 1 - Monedas-Service-Consulta  ====";
+		public static final String MONEDASSERVICEICREAR    = "==== INICIO Convenio 1 - Monedas-Service-Crear  ====";
+		public static final String MONEDASSERVICEFCREAR    = "==== FIN Convenio 1 - Monedas-Service-Crear  ====";
 		public static final String MONEDASSERVICEIACTUALIZAR    = "==== INICIO Convenio 1 - Monedas-Service-Actualizar  ====";
+		public static final String MONEDASSERVICEFACTUALIZAR    = "==== FIN Convenio 1 - Monedas-Service-Actualizar  ====";
 		public static final String MONEDASSERVICEF    = "==== FIN Convenio 1 - Monedas ====";
+		public static final String MONEDASSERVICEILIMITES    = "==== INICIO Convenio 1 - Limites-Service-Inicializar  ====";
+		public static final String MONEDASSERVICEFLIMITES    = "==== FIN Convenio 1 - Limites-Service-Inicializar  ====";
+		public static final String MONEDASSERVICEITASAS    = "==== INICIO Convenio 1 - Tasa-Service-Inicializar  ====";
+		public static final String MONEDASSERVICEFTASAS    = "==== FIN Convenio 1 - Tasa-Service-Inicializar  ====";
 		
 		//Consultas
 		public static final String MONEDASCONSULTASERVICEI    = "==== INICIO Convenio 1 - Monedas Consultas ====";

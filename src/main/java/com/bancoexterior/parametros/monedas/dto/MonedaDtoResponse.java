@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.bancoexterior.parametros.monedas.response.Resultado;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class MonedaDtoResponse implements Serializable{
 	
 	private Resultado resultado;
 	
+	@JsonProperty("monedas")
 	private List<MonedaDto> listMonedasDto;
 	
 	public MonedaDtoResponse(){

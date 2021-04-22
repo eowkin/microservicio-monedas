@@ -8,18 +8,21 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
 
-import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
+
+
 @Component
 public class Utils {
 
+	private static final Logger LOGGER = LogManager.getLogger(Utils.class);
 	
 	/**
      * Nombre:                  getHttpStatus
@@ -54,7 +57,7 @@ public class Utils {
 		}
 		
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			LOGGER.error(e.getMessage());
 			return HttpStatus.BAD_REQUEST;
 		}
 		
@@ -82,7 +85,7 @@ public class Utils {
 		    		   .withResolverStyle(ResolverStyle.STRICT));
 		      return true;
 		      } catch (DateTimeParseException e) {
-		    	  log.info("Error: "+e);
+		    	  LOGGER.info("Error: "+e);
 		          return false;
 		      }
 	}

@@ -11,6 +11,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -23,7 +25,7 @@ import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
 import com.bancoexterior.parametros.monedas.dto.LimitesGeneralesDto;
 import com.bancoexterior.parametros.monedas.dto.MonedaDto;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponse;
-import com.bancoexterior.parametros.monedas.dto.MonedaRequestActualizar;
+import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponseActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasDtoRequest;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 import com.bancoexterior.parametros.monedas.dto.TasaDto;
@@ -34,12 +36,14 @@ import com.bancoexterior.parametros.monedas.model.RegistrarAuditoriaRequest;
 import com.bancoexterior.parametros.monedas.repository.IMonedaRepository;
 import com.bancoexterior.parametros.monedas.util.Mapper;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
+
 @Service
 public class MonedaServiceImpl implements IMonedaService {
 
+	private static final Logger LOGGER = LogManager.getLogger(MonedaServiceImpl.class);
+	
 	@Autowired
 	private IMonedaRepository repo;
 
@@ -62,10 +66,19 @@ public class MonedaServiceImpl implements IMonedaService {
 	private ILimitesGeneralesService limitesService;
 	
 	@Override
-	public MonedaDtoResponse save(MonedasRequest monedasRequest) {
-		log.info("Inicio del Guardar");
+	public MonedaDtoResponseActualizar save(MonedasRequest monedasRequest, HttpServletRequest requestHTTP) {
+		LOGGER.info(Servicios.MONEDASSERVICEICREAR);
+		LOGGER.info(monedasRequest);
+		String microservicio = Servicios.MONEDAS;
+		
+		RegistrarAuditoriaRequest reAU = null;
+		
+		reAU = new RegistrarAuditoriaRequest(monedasRequest, microservicio, requestHTTP);
+		String errorM = Constantes.BLANK;
+		String codigo =  CodRespuesta.C0000;
+		
 		Moneda obj = new Moneda();
-		MonedaDtoResponse response = new MonedaDtoResponse();
+		MonedaDtoResponseActualizar response = new MonedaDtoResponseActualizar();
 		Resultado resultado = new Resultado();
 		
 		resultado.setCodigo(CodRespuesta.C0000);
@@ -73,26 +86,65 @@ public class MonedaServiceImpl implements IMonedaService {
 		//monedasDtoRequest.getResultado().setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
 		try {
 			
-			log.info("monedasDtoRequest: "+monedasRequest);
+			
 			
 			MonedasDtoRequest monedasDtoRequest =  monedasRequest.getMonedasDtoRequest();
-			log.info("monedasDtoRequest: "+monedasRequest);
+			LOGGER.info(monedasRequest);
 			obj = mapper.map(monedasDtoRequest, Moneda.class);
-			log.info("monedasDtoRequest: "+monedasRequest);
+			LOGGER.info(monedasRequest);
 			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
+			//obj.setCodUsuario("E66666666666666666666666666666");
+			LOGGER.info(obj);
 			
-			log.info("obj: "+obj);
-			obj = repo.save(obj);
+			if(monedasDtoRequest.equals(codmonedabs)) {
+				obj = repo.save(obj);
+				
+			}else {
+				obj = repo.save(obj);
+				
+				
+				LOGGER.info("No es moneda nacional, se crea y se inicializa tasa y limites");
+				//llamar inicializar Tasa
+				TasaDto tasaDto = new TasaDto();
+				tasaDto.setCodMonedaOrigen(monedasRequest.getMonedasDtoRequest().getCodMoneda());
+				tasaDto.setCodMonedaDestino(codmonedabs);
+				tasaDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
+				tasaDto.setMontoTasa(BigDecimal.ZERO);
+				tasaService.inicializarTasaMoneda(tasaDto);
+				
+				//llamar inicializar limites generales
+				LimitesGeneralesDto limitesGeneralesDto = new LimitesGeneralesDto();
+				limitesGeneralesDto.setCodMoneda(monedasRequest.getMonedasDtoRequest().getCodMoneda());
+				limitesGeneralesDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
+				limitesService.inicializarLimitesGeneralesMoneda(limitesGeneralesDto);
+				
+			}
+			
 			response.setResultado(resultado);
-			response.setListMonedasDto(repo.getMonedaByid(obj.getCodMoneda()));
-			return response;
+		
 		} catch (Exception e) {
-			log.error("no se pudo crear la moneda");
+			LOGGER.error(e);
+			codigo = CodRespuesta.CME6001;
+			errorM = Constantes.EXC+e;
 			response.getResultado().setCodigo(CodRespuesta.CME6001);
-			log.info("error: "+env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
 			response.getResultado().setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
-			return response;
 		}
+		
+		resultado.setCodigo(codigo);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
+		
+		if(reAU != null) {
+			reAU.setIdCliente(Constantes.RIF);
+			reAU.setCedula(Constantes.CEDULA);
+			reAU.setTelefono(Constantes.TELEFONO);
+			reAU.setIdCanal(monedasRequest.getCanalCM());
+			registrarAuditoriaBD(reAU, resultado, errorM);
+		}
+		
+		LOGGER.info(Servicios.MONEDASSERVICEFCREAR);
+		return response;
+		
+		
 
 		
 	}
@@ -100,26 +152,28 @@ public class MonedaServiceImpl implements IMonedaService {
 	@Override
 	//@Transactional
 	public Resultado crear(MonedasRequest monedasRequest) {
+		LOGGER.info(Servicios.MONEDASSERVICEICREAR);
 		Moneda obj = new Moneda();
 		Resultado resultado = new Resultado();
 		resultado.setCodigo(CodRespuesta.C0000);
 		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
 		
 		try {
-			log.info("monedasDtoRequest: "+monedasRequest);
+			LOGGER.info(monedasRequest);
 			
 			MonedasDtoRequest monedasDtoRequest =  monedasRequest.getMonedasDtoRequest();
-			log.info("monedasDtoRequest: "+monedasRequest);
+			LOGGER.info(monedasRequest);
 			obj = mapper.map(monedasDtoRequest, Moneda.class);
-			log.info("moneda: "+obj);
+			LOGGER.info(obj);
 			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
 			
-			log.info("obj: "+obj);
+			LOGGER.info(obj);
 			obj = repo.save(obj);
 			
+			LOGGER.info(Servicios.MONEDASSERVICEFCREAR);
 			return resultado;
 		} catch (Exception e) {
-			log.info("error en las trasacciones");
+			LOGGER.error(e);
 			resultado.setCodigo(CodRespuesta.CME2001);
 			return resultado;
 		}
@@ -127,59 +181,129 @@ public class MonedaServiceImpl implements IMonedaService {
 	}
 	
 	@Override
+	public MonedaDtoResponseActualizar actualizar(MonedasRequest monedasRequest, HttpServletRequest requestHTTP) {
+		
+		LOGGER.info(Servicios.MONEDASSERVICEIACTUALIZAR);
+		LOGGER.info(monedasRequest);
+		String microservicio = Servicios.MONEDASACTUALIZAR;
+		
+		RegistrarAuditoriaRequest reAU = null;
+		
+		reAU = new RegistrarAuditoriaRequest(monedasRequest, microservicio, requestHTTP);
+		String errorM = Constantes.BLANK;
+		String codigo =  CodRespuesta.C0000;
+		
+		Moneda obj = new Moneda();
+		MonedaDtoResponseActualizar response = new MonedaDtoResponseActualizar();
+		Resultado resultado = new Resultado();
+		resultado.setCodigo(CodRespuesta.C0000);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
+		
+		try {
+			
+			MonedaDto monedaDto = this.findById(monedasRequest.getMonedasDtoRequest().getCodMoneda());
+			LOGGER.info(monedaDto);
+			
+			MonedasDtoRequest monedasDtoRequest = monedasRequest.getMonedasDtoRequest();
+			
+			monedaDto.setCodAlterno(monedasDtoRequest.getCodAlterno());
+			monedaDto.setDescripcion(monedasDtoRequest.getDescripcion());
+			monedaDto.setFlagActivo(monedasDtoRequest.getFlagActivo());
+			
+			
+			
+			//MonedaDto monedaDto =  monedaRequestActualizar.getMonedaDto();
+			LOGGER.info(monedaDto);
+			obj = mapper.map(monedaDto, Moneda.class);
+			LOGGER.info(obj);
+			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
+			//obj.setCodUsuario("E66666666666666666666666666666");
+			
+			LOGGER.info(obj);
+			obj = repo.save(obj);
+			
+			response.setResultado(resultado);
+			
+		} catch (Exception e) {
+			LOGGER.error(e);
+			codigo = CodRespuesta.CME6001;
+			errorM = Constantes.EXC+e;
+			response.getResultado().setCodigo(CodRespuesta.CME6001);
+			response.getResultado().setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
+		}
+		
+		resultado.setCodigo(codigo);
+		resultado.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
+		
+		if(reAU != null) {
+			reAU.setIdCliente(Constantes.RIF);
+			reAU.setCedula(Constantes.CEDULA);
+			reAU.setTelefono(Constantes.TELEFONO);
+			reAU.setIdCanal(monedasRequest.getCanalCM());
+			registrarAuditoriaBD(reAU, resultado, errorM);
+		}
+		LOGGER.info(Servicios.MONEDASSERVICEFACTUALIZAR);
+		
+		return response;
+	}
+	
+	/*
+	@Override
 	public Resultado actualizar(MonedaRequestActualizar monedaRequestActualizar) {
+		
+		LOGGER.info(Servicios.MONEDASSERVICEIACTUALIZAR);
 		Moneda obj = new Moneda();
 		Resultado resultado = new Resultado();
 		resultado.setCodigo(CodRespuesta.C0000);
 		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
 		
 		try {
-			log.info("monedaRequestActualizar: "+monedaRequestActualizar);
+			LOGGER.info(monedaRequestActualizar);
 			
 			MonedaDto monedaDto =  monedaRequestActualizar.getMonedaDto();
-			log.info("monedaDto: "+monedaDto);
+			LOGGER.info(monedaDto);
 			obj = mapper.map(monedaDto, Moneda.class);
-			log.info("moneda: "+obj);
+			LOGGER.info(obj);
 			obj.setCodUsuario(monedaRequestActualizar.getCodUsuarioMR());
 			
 			
-			log.info("obj: "+obj);
+			LOGGER.info(obj);
 			obj = repo.save(obj);
-			
+			LOGGER.info(Servicios.MONEDASSERVICEFACTUALIZAR);
 			return resultado;
 		} catch (Exception e) {
-			log.info("error en la actualizacion");
+			LOGGER.error(e);
 			resultado.setCodigo(CodRespuesta.CME6001);
 			resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
 			return resultado;
 		}
-	}
+	}*/
 	
 	
 	@Override
 	public List<MonedaDto> findAllMonedasDto(MonedaDto monedaDto) {
-
+		LOGGER.info(Servicios.MONEDASSERVICEICONSULTA);
+		
+		
 		List<MonedaDto> listMonedasDto = null;
 		
 		if(monedaDto.getCodMoneda() == null && monedaDto.getFlagActivo() == null) {
-			log.info("hizo este query 1");
 			listMonedasDto = repo.getAll();
 		}
 		
 		if(monedaDto.getCodMoneda() != null && monedaDto.getFlagActivo() == null) {
-			log.info("hizo este query 2");
 			listMonedasDto = repo.getMonedaByid(monedaDto.getCodMoneda());
 		}
 		
 		if(monedaDto.getCodMoneda() == null && monedaDto.getFlagActivo() != null) {
-			log.info("hizo este query 3");
 			listMonedasDto = repo.getMonedaByFlagActivo(monedaDto.getFlagActivo());
 		}
 		
 		if(monedaDto.getCodMoneda() != null && monedaDto.getFlagActivo() != null) {
-			log.info("hizo este query 4");
 			listMonedasDto = repo.getMonedaByidAndFlag(monedaDto.getCodMoneda(),monedaDto.getFlagActivo());
 		}
+		
+		LOGGER.info(Servicios.MONEDASSERVICEFCONSULTA);
 		return listMonedasDto;
 	}
 
@@ -208,7 +332,7 @@ public class MonedaServiceImpl implements IMonedaService {
 	
 	@Override
 	public MonedaDtoResponse consultaMonedas(MonedasRequest request) {
-		log.info(Servicios.MONEDASCONSULTASERVICEI);
+		LOGGER.info(Servicios.MONEDASCONSULTASERVICEI);
 		MonedaDtoResponse monedaDtoResponse = new MonedaDtoResponse();
 		Resultado resultado = new Resultado();
 		String codigo = CodRespuesta.C0000;
@@ -216,16 +340,11 @@ public class MonedaServiceImpl implements IMonedaService {
 		List<MonedaDto> listMonedasDto;
 		MonedaDto monedaDto =  new MonedaDto(request);
 		MonedasDtoRequest monedasDtoRequest  = request.getMonedasDtoRequest();
-		log.info("codMoneda: "+monedasDtoRequest.getCodMoneda());
-		log.info("flagActivo: "+monedasDtoRequest.getFlagActivo());
 		try {
 			
 			codigo = validaDatosConsulta(request);
-			log.info("codigo: "+codigo);
+			LOGGER.info(codigo);
 			if(codigo.equalsIgnoreCase(CodRespuesta.C0000)) {
-				log.info("monedaDto: "+monedaDto);	
-				log.info("codMeneda: "+monedaDto.getCodMoneda());
-				log.info("flagActivo: "+monedaDto.getFlagActivo());
 				//consulta BD
 				listMonedasDto = this.findAllMonedasDto(monedaDto);
 				monedaDtoResponse.setListMonedasDto(listMonedasDto);
@@ -236,7 +355,7 @@ public class MonedaServiceImpl implements IMonedaService {
 				errorCM = resultado.getDescripcion();
 			}
 		} catch (Exception e) {
-			log.error(""+e);
+			LOGGER.error(e);
 			codigo = CodRespuesta.CME6000;
 			errorCM = Constantes.EXC+e;
 		}
@@ -244,8 +363,8 @@ public class MonedaServiceImpl implements IMonedaService {
 		monedaDtoResponse.getResultado().setCodigo(codigo);
 		monedaDtoResponse.getResultado().setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorCM));
 		
-		log.info("monedaDtoResponse: "+monedaDtoResponse);
-		log.info(Servicios.MONEDASCONSULTASERVICEF);
+		LOGGER.info(monedaDtoResponse);
+		LOGGER.info(Servicios.MONEDASCONSULTASERVICEF);
 		return monedaDtoResponse;
 	}
 	
@@ -263,7 +382,7 @@ public class MonedaServiceImpl implements IMonedaService {
      */
 	private String validaDatosConsulta(MonedasRequest request) {
 		
-		log.info(""+request);
+		LOGGER.info(""+request);
 
 		String codigo = CodRespuesta.C0000;
 		String codMoneda;
@@ -318,7 +437,7 @@ public class MonedaServiceImpl implements IMonedaService {
 			return resultado;
 		}
 	    
-	    log.info(""+resultado);
+		LOGGER.info(resultado);
 		return resultado;
 		
 	}
@@ -340,124 +459,5 @@ public class MonedaServiceImpl implements IMonedaService {
 	}
 	
 	
-	@Override
-	public Resultado gestionCrearMoneda(MonedasRequest request, HttpServletRequest requestHTTP) {
-		
-		log.info(Servicios.MONEDASSERVICEI+"gestionCrearMoneda");
-		Moneda moneda = new Moneda();
-		Resultado response = new Resultado();
-		String codigo ;
-		String errorM ;
-		String microservicio =  Servicios.MONEDAS;
-		RegistrarAuditoriaRequest reAU = null;
-		
-		
-		reAU = new RegistrarAuditoriaRequest(request, microservicio,requestHTTP);
-
-		try {
-			log.info("MonedasRequest: " +request);
-			
-			response = this.crear(request);
-			log.info("response: "+response);
-			codigo = response.getCodigo();
-			errorM = response.getDescripcion();
-			
-			if(response.getCodigo().equals(CodRespuesta.C0000)) {
-				if(!request.getMonedasDtoRequest().getCodMoneda().equals(codmonedabs)) {
-					
-					
-					log.info("No es moneda nacional, se crea y se inicializa tasa y limites");
-					//llamar inicializar Tasa
-					TasaDto tasaDto = new TasaDto();
-					tasaDto.setCodMonedaOrigen(request.getMonedasDtoRequest().getCodMoneda());
-					tasaDto.setCodMonedaDestino(codmonedabs);
-					tasaDto.setCodUsuario(request.getCodUsuarioMR());
-					tasaDto.setMontoTasa(BigDecimal.ZERO);
-					tasaService.inicializarTasaMoneda(tasaDto);
-					
-					//llamar inicializar limites generales
-					LimitesGeneralesDto limitesGeneralesDto = new LimitesGeneralesDto();
-					limitesGeneralesDto.setCodMoneda(request.getMonedasDtoRequest().getCodMoneda());
-					limitesGeneralesDto.setCodUsuario(request.getCodUsuarioMR());
-					limitesService.inicializarLimitesGeneralesMoneda(limitesGeneralesDto);
-				}
-
-			}
-			
-						
-		} catch (Exception e) {
-			log.error("e: "+e);
-			codigo = CodRespuesta.CME6000;
-			errorM = Constantes.EXC+e;
-			
-		}
-		
-		if(reAU != null) {
-			reAU.setIdCliente(Constantes.RIF);
-			reAU.setCedula(Constantes.CEDULA);
-			reAU.setTelefono(Constantes.TELEFONO);
-			reAU.setIdCanal("8");
-			registrarAuditoriaBD(reAU, response, errorM);
-		}
-		
-		return response;
-	}
-
-	@Override
-	public Resultado gestionActualizarMoneda(MonedasRequest request, HttpServletRequest requestHTTP) {
-		log.info(Servicios.MONEDASSERVICEIACTUALIZAR);
-		Moneda moneda = new Moneda();
-		Resultado response = new Resultado();
-		String codigo ;
-		String errorM ;
-		String microservicio =  Servicios.MONEDASACTUALIZAR;
-		RegistrarAuditoriaRequest reAU = null;
-		
-		
-		reAU = new RegistrarAuditoriaRequest(request, microservicio,requestHTTP);
-
-		try {
-			log.info("MonedasRequest: " +request);
-			log.info(request.getMonedasDtoRequest().getCodMoneda());
-			MonedaDto monedaDto = this.findById(request.getMonedasDtoRequest().getCodMoneda());
-			log.info("monedaDto: " +monedaDto);
-			
-			MonedasDtoRequest monedasDtoRequest = request.getMonedasDtoRequest();
-			
-			monedaDto.setCodAlterno(monedasDtoRequest.getCodAlterno());
-			monedaDto.setDescripcion(monedasDtoRequest.getDescripcion());
-			monedaDto.setFlagActivo(monedasDtoRequest.getFlagActivo());
-			
-			MonedaRequestActualizar monedaRequestActualizar = new MonedaRequestActualizar();
-			monedaRequestActualizar.setIdSesionMR(request.getIdSesionMR());
-			monedaRequestActualizar.setIdUsuarioMR(request.getIdUsuarioMR());
-			monedaRequestActualizar.setCodUsuarioMR(request.getCodUsuarioMR());
-			monedaRequestActualizar.setCanalCM(request.getCanalCM());
-			
-			monedaRequestActualizar.setMonedaDto(monedaDto);
-			log.info("monedaRequestActualizar: " +monedaRequestActualizar);
-			response = this.actualizar(monedaRequestActualizar);
-			log.info("response: "+response);
-			
-			codigo = response.getCodigo();
-			errorM = response.getDescripcion();
-			
-						
-		} catch (Exception e) {
-			log.error("e: "+e);
-			codigo = CodRespuesta.CME6000;
-			errorM = Constantes.EXC+e;
-			
-		}
-		
-		if(reAU != null) {
-			reAU.setIdCliente(Constantes.RIF);
-			reAU.setCedula(Constantes.CEDULA);
-			reAU.setTelefono(Constantes.TELEFONO);
-			reAU.setIdCanal("8");
-			registrarAuditoriaBD(reAU, response, errorM);
-		}
-		return response;
-
-	}
+	
 }
