@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -58,4 +59,8 @@ public class Moneda {
 		setFechaModificacion(new Date());
 	}
 	
+	@PreUpdate
+	public void preUpdate() {
+		setFechaModificacion(new Date());
+	}
 }

@@ -1,6 +1,7 @@
 package com.bancoexterior.parametros.monedas.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -51,7 +52,7 @@ public class MonedaServiceImpl implements IMonedaService {
 	private Environment env;
 	
 	@Autowired
-	private IRegistrarAuditoriaService registrarA ;
+	private IRegistrarAuditoriaService registrarA;
 
 	@Autowired
 	private Mapper mapper;
@@ -306,6 +307,36 @@ public class MonedaServiceImpl implements IMonedaService {
 		LOGGER.info(Servicios.MONEDASSERVICEFCONSULTA);
 		return listMonedasDto;
 	}
+	
+	@Override
+	public List<MonedaDto> findAllMonedasDtoNuevo(MonedaDto monedaDto) {
+		LOGGER.info(Servicios.MONEDASSERVICEICONSULTA+"NUEVA");
+		
+		String codMoneda = Constantes.BLANK;
+		String flag = Constantes.BLANK;
+		boolean flagActivo = false;
+		
+		if(monedaDto.getCodMoneda()!= null) {
+			codMoneda = monedaDto.getCodMoneda();
+		}
+		
+		if(monedaDto.getFlagActivo()!= null) {
+			flag = "si";
+			flagActivo = monedaDto.getFlagActivo();
+		}
+		
+		List<Moneda> listMonedas = repo.getMonedaByidNuevo(codMoneda, flag, flagActivo);
+		
+		List<MonedaDto> listMonedasDto = new ArrayList<MonedaDto>();
+
+		for (Moneda moneda : listMonedas) {
+
+			MonedaDto monedaDto1 = mapper.map(moneda, MonedaDto.class);
+			listMonedasDto.add(monedaDto1);
+		}
+		LOGGER.info(Servicios.MONEDASSERVICEFCONSULTA);
+		return listMonedasDto;
+	}
 
 	
 
@@ -346,7 +377,8 @@ public class MonedaServiceImpl implements IMonedaService {
 			LOGGER.info(codigo);
 			if(codigo.equalsIgnoreCase(CodRespuesta.C0000)) {
 				//consulta BD
-				listMonedasDto = this.findAllMonedasDto(monedaDto);
+				//listMonedasDto = this.findAllMonedasDto(monedaDto);
+				listMonedasDto = this.findAllMonedasDtoNuevo(monedaDto);
 				monedaDtoResponse.setListMonedasDto(listMonedasDto);
 				
 				//Validar Respuesta
@@ -457,6 +489,8 @@ public class MonedaServiceImpl implements IMonedaService {
 			
 		        registrarA.registrarAuditoria(registrarAu, response.getCodigo(),response.getDescripcion(),errorAdicional);	
 	}
+
+	
 	
 	
 	

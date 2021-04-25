@@ -20,6 +20,6 @@ public interface IMonedaService {
 	public Resultado crear(MonedasRequest monedasRequest);
 	public MonedaDtoResponseActualizar actualizar(MonedasRequest monedasRequest, HttpServletRequest requestHTTP);
 	public List<MonedaDto> findAllMonedasDto(MonedaDto monedaDto);
-	
+	public List<MonedaDto> findAllMonedasDtoNuevo(MonedaDto monedaDto);
 	
 }
