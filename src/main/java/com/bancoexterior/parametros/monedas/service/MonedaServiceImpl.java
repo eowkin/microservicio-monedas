@@ -32,6 +32,8 @@ import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 import com.bancoexterior.parametros.monedas.dto.TasaDto;
 import com.bancoexterior.parametros.monedas.response.Resultado;
 import com.bancoexterior.parametros.monedas.entities.Moneda;
+import com.bancoexterior.parametros.monedas.exception.CodMonedaExistException;
+import com.bancoexterior.parametros.monedas.exception.CodMonedaNoExistException;
 import com.bancoexterior.parametros.monedas.interfase.IRegistrarAuditoriaService;
 import com.bancoexterior.parametros.monedas.model.RegistrarAuditoriaRequest;
 import com.bancoexterior.parametros.monedas.repository.IMonedaRepository;
@@ -71,6 +73,11 @@ public class MonedaServiceImpl implements IMonedaService {
 		LOGGER.info(Servicios.MONEDASSERVICEICREAR);
 		LOGGER.info(monedasRequest);
 		String microservicio = Servicios.MONEDAS;
+		
+		
+		if (this.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
+			throw new CodMonedaExistException(CodRespuesta.CME2001);
+		}
 		
 		RegistrarAuditoriaRequest reAU = null;
 		
@@ -183,7 +190,6 @@ public class MonedaServiceImpl implements IMonedaService {
 	
 	@Override
 	public MonedaDtoResponseActualizar actualizar(MonedasRequest monedasRequest, HttpServletRequest requestHTTP) {
-		
 		LOGGER.info(Servicios.MONEDASSERVICEIACTUALIZAR);
 		LOGGER.info(monedasRequest);
 		String microservicio = Servicios.MONEDASACTUALIZAR;

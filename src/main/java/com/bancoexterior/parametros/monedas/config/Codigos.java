@@ -37,6 +37,7 @@ public class Codigos {
 		//BD
 		public static final String CME2000 = "2000";
 		public static final String CME2001 = "2001";
+		public static final String CME2005 = "2005";
 		
 		////GENERAL
     	public static final String CME6000 = "6000";

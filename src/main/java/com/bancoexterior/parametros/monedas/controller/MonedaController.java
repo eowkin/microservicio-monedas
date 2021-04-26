@@ -28,8 +28,12 @@ import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponse;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponseActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
+import com.bancoexterior.parametros.monedas.exception.CodMonedaExistException;
+import com.bancoexterior.parametros.monedas.exception.CodMonedaNoExistException;
+import com.bancoexterior.parametros.monedas.exception.FieldErrorValidationException;
 import com.bancoexterior.parametros.monedas.service.IMonedaService;
 import com.bancoexterior.parametros.monedas.util.Utils;
+
 
 
 
@@ -45,7 +49,8 @@ public class MonedaController {
 
 	@Autowired
 	private Environment env;
-
+	
+	
 	
 
 	/**
@@ -94,6 +99,7 @@ public class MonedaController {
 	 * @return ResponseEntity<Object>
 	 * @version 1.0
 	 * @author Eugenio Owkin
+	 * @throws ApiUnprocessableEntity 
 	 * @since 16/03/21
 	 */
 
@@ -105,54 +111,36 @@ public class MonedaController {
 		LOGGER.info(Servicios.MONEDASSERVICEI);
 		LOGGER.info(monedasRequest);
 		if (result.hasErrors()) {
-
-			ResponseBad responseBad = new ResponseBad();
 			List<String> errors = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
 					.collect(Collectors.toList());
-			LOGGER.info("errors: " + errors);
-
-			HttpStatus httpStatusError = Utils.getHttpStatus(errors.get(0));
-			responseBad.getResultadoBAD().setCodigo(errors.get(0));
-			responseBad.getResultadoBAD()
-					.setDescripcion(env.getProperty(Constantes.RES + errors.get(0), errors.get(0)));
-			return new ResponseEntity<>(responseBad, httpStatusError);
+			LOGGER.error(errors);
+			throw new FieldErrorValidationException(errors.get(0));			
 
 		}
-
+		
+		if (monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
+			throw new CodMonedaExistException(CodRespuesta.CME2001);
+		}
+		
 		
 
-		if (monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
-			LOGGER.info("existe");
-			ResponseBad responseBad = new ResponseBad();
-			HttpStatus httpStatusError = Utils.getHttpStatus(CodRespuesta.CME2001);
-			responseBad.getResultadoBAD().setCodigo(CodRespuesta.CME2001);
-			responseBad.getResultadoBAD()
-					.setDescripcion(env.getProperty(Constantes.RES + CodRespuesta.CME2001, CodRespuesta.CME2001));
-			return new ResponseEntity<>(responseBad, httpStatusError);
-		} else {
+		MonedaDtoResponseActualizar response;
+		HttpStatus estatusCM;
+		
+		response = monedaService.save(monedasRequest, requestHTTP);
+		LOGGER.info(response);
+		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
+		LOGGER.info(estatusCM);
+		LOGGER.info(Servicios.MONEDASCONTROLLERF);
+		
+		if(response.getResultado().getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
 			
-			//Resultado resultado;
-			//resultado = monedaService.gestionCrearMoneda(monedasRequest, requestHTTP);
+			return new ResponseEntity<>(response,estatusCM);
+		}else {
 			
-			MonedaDtoResponseActualizar response;
-			HttpStatus estatusCM;
-			
-			response = monedaService.save(monedasRequest, requestHTTP);
-			LOGGER.info(response);
-			estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
-			LOGGER.info(estatusCM);
-			LOGGER.info(Servicios.MONEDASCONTROLLERF);
-			
-			if(response.getResultado().getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
-				
-				return new ResponseEntity<>(response,estatusCM);
-			}else {
-				
-				return new ResponseEntity<>(response.getResultado(),estatusCM);
-			}		
-			
+			return new ResponseEntity<>(response.getResultado(),estatusCM);
 		}
-
+		
 	}
 	
 	/**
@@ -175,53 +163,33 @@ public class MonedaController {
 		LOGGER.info(Servicios.MONEDASSERVICEI);
 		LOGGER.info(monedasRequest);
 		if (result.hasErrors()) {
-
-			ResponseBad responseBad = new ResponseBad();
 			List<String> errors = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
 					.collect(Collectors.toList());
 			LOGGER.error(errors);
-
-			HttpStatus httpStatusError = Utils.getHttpStatus(errors.get(0));
-			responseBad.getResultadoBAD().setCodigo(errors.get(0));
-			responseBad.getResultadoBAD()
-					.setDescripcion(env.getProperty(Constantes.RES + errors.get(0), errors.get(0)));
-			return new ResponseEntity<>(responseBad, httpStatusError);
+			throw new FieldErrorValidationException(errors.get(0));			
 
 		}
-
-		
 
 		if (!monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
-			LOGGER.info("no existe");
-			ResponseBad responseBad = new ResponseBad();
-			HttpStatus httpStatusError = Utils.getHttpStatus(CodRespuesta.CME2000);
-			responseBad.getResultadoBAD().setCodigo(CodRespuesta.CME2000);
-			responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES + CodRespuesta.CME2000, CodRespuesta.CME2000));
-			return new ResponseEntity<>(responseBad, httpStatusError);
-		} else {
-			
-			//Resultado resultado;
-			//resultado = monedaService.gestionActualizarMoneda(monedasRequest, requestHTTP);
-			
-			
-			MonedaDtoResponseActualizar response = new MonedaDtoResponseActualizar();
-			HttpStatus estatusCM;
-			
-			response = monedaService.actualizar(monedasRequest, requestHTTP);
-			LOGGER.info(response);
-			estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
-			LOGGER.info(estatusCM);
-			LOGGER.info(Servicios.MONEDASCONTROLLERF);
-			
-			if(response.getResultado().getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
-				
-				return new ResponseEntity<>(response,estatusCM);
-			}else {
-				
-				return new ResponseEntity<>(response.getResultado(),estatusCM);
-			}
+			throw new CodMonedaNoExistException(CodRespuesta.CME2000);
 		}
 
+		MonedaDtoResponseActualizar response;
+		HttpStatus estatusCM;
+		
+		response = monedaService.actualizar(monedasRequest, requestHTTP);
+		LOGGER.info(response);
+		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
+		LOGGER.info(estatusCM);
+		LOGGER.info(Servicios.MONEDASCONTROLLERF);
+		
+		if(response.getResultado().getCodigo().trim().substring(0, 1).equalsIgnoreCase(Constantes.SUBSTRING_COD_OK)) {
+			
+			return new ResponseEntity<>(response,estatusCM);
+		}else {
+			
+			return new ResponseEntity<>(response.getResultado(),estatusCM);
+		}
 	}
 
 }
