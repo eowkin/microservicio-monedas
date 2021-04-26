@@ -31,21 +31,7 @@ public interface IMonedaRepository extends JpaRepository<Moneda, String>{
 		@Query(value = queryNativo, nativeQuery = true)
 		public List<Moneda> getMonedaByidNuevo(String codMoneda, String flag, boolean flagActivo);
 		
-		
-//		String queryNuevo = "select new com.bancoexterior.parametros.monedas.dto.MonedaDto(t.codMoneda, t.descripcion, t.codAlterno, t.flagActivo, t.codUsuario, t.fechaModificacion) "
-//				+ " from Moneda t"
-//				+ " where t.codMoneda = (case when ?1 = '' then t.codMoneda else ?1 end) "
-//				+ " and "
-//				+ " (case when  ?2 = '' then "
-//				+ "    t.flagActivo = ?3 "
-//				+ " else "
-//				+ "   t.flagActivo = t.flagActivo "
-//				+ " end)";
-//	
-//
-//		@Query(value = queryNuevo)
-//		public List<MonedaDto> getMonedaByidNuevo(String codMoneda, String flag, boolean flagActivo);
-		
+	
 		
 		@Query(value = queryAll)
 		public List<MonedaDto> getAll();

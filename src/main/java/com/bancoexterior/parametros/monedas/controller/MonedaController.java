@@ -1,7 +1,5 @@
 package com.bancoexterior.parametros.monedas.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -9,30 +7,24 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.bancoexterior.parametros.monedas.response.ResponseBad;
-import com.bancoexterior.parametros.monedas.config.Codigos.CodRespuesta;
 import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
 import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponse;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponseActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
-import com.bancoexterior.parametros.monedas.exception.CodMonedaExistException;
-import com.bancoexterior.parametros.monedas.exception.CodMonedaNoExistException;
-import com.bancoexterior.parametros.monedas.exception.FieldErrorValidationException;
 import com.bancoexterior.parametros.monedas.service.IMonedaService;
 import com.bancoexterior.parametros.monedas.util.Utils;
+import com.bancoexterior.parametros.monedas.validator.IMonedaValidator;
 
 
 
@@ -46,9 +38,10 @@ public class MonedaController {
 	
 	@Autowired
 	IMonedaService monedaService;
-
+	
 	@Autowired
-	private Environment env;
+	IMonedaValidator monedaValidator;
+
 	
 	
 	
@@ -62,7 +55,7 @@ public class MonedaController {
 	 * @return ResponseEntity<Object>
 	 * @version 1.0
 	 * @author Eugenio Owkin
-	 * @since 16/03/21
+	 * @since 12/04/21
 	 */
 	@PostMapping(path = Servicios.MONEDASURLV1
 			+ "/consultas", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -100,7 +93,7 @@ public class MonedaController {
 	 * @version 1.0
 	 * @author Eugenio Owkin
 	 * @throws ApiUnprocessableEntity 
-	 * @since 16/03/21
+	 * @since 12/04/21
 	 */
 
 	@PostMapping(path = Servicios.MONEDASURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -110,20 +103,8 @@ public class MonedaController {
 
 		LOGGER.info(Servicios.MONEDASSERVICEI);
 		LOGGER.info(monedasRequest);
-		if (result.hasErrors()) {
-			List<String> errors = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
-					.collect(Collectors.toList());
-			LOGGER.error(errors);
-			throw new FieldErrorValidationException(errors.get(0));			
-
-		}
 		
-		if (monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
-			throw new CodMonedaExistException(CodRespuesta.CME2001);
-		}
-		
-		
-
+		monedaValidator.validarCrear(monedasRequest, result);
 		MonedaDtoResponseActualizar response;
 		HttpStatus estatusCM;
 		
@@ -144,15 +125,15 @@ public class MonedaController {
 	}
 	
 	/**
-	 * Nombre: crearMoneda 
-	 * Descripcion: Invocar metodo para ingresar moneda nueva
+	 * Nombre: actualizarMoneda 
+	 * Descripcion: Invocar metodo para actualizar moneda
 	 * @param request     Objeto tipo MonedasRequest
 	 * @param BindingResult result
 	 * @param requestHTTP Objeto tipo HttpServletRequest
 	 * @return ResponseEntity<Object>
 	 * @version 1.0
 	 * @author Eugenio Owkin
-	 * @since 16/03/21
+	 * @since 12/04/21
 	 */
 
 	@PutMapping(path = Servicios.MONEDASURLV1, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -162,18 +143,8 @@ public class MonedaController {
 
 		LOGGER.info(Servicios.MONEDASSERVICEI);
 		LOGGER.info(monedasRequest);
-		if (result.hasErrors()) {
-			List<String> errors = result.getFieldErrors().stream().map(FieldError::getDefaultMessage)
-					.collect(Collectors.toList());
-			LOGGER.error(errors);
-			throw new FieldErrorValidationException(errors.get(0));			
-
-		}
-
-		if (!monedaService.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
-			throw new CodMonedaNoExistException(CodRespuesta.CME2000);
-		}
-
+		
+		monedaValidator.validarActualizar(monedasRequest, result);
 		MonedaDtoResponseActualizar response;
 		HttpStatus estatusCM;
 		

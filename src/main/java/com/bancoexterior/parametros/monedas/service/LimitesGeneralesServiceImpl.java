@@ -27,6 +27,20 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 	private ILimitesGeneralesRepository repo;
 	
 	
+	
+	/**
+	 * Nombre: inicializarLimitesGeneralesMoneda 
+	 * Descripcion: Invocar metodo para inicializar los
+	 * limites a la moneda a crear.
+	 *
+	 * @param request     Objeto tipo LimitesGeneralesDto
+	 * @return void
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+	
+	
 	@Override
 	public void inicializarLimitesGeneralesMoneda(LimitesGeneralesDto limitesGeneralesDto) {
 		LOGGER.info(Servicios.MONEDASSERVICEILIMITES);

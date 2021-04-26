@@ -22,6 +22,18 @@ public class TasaServiceImple implements ITasaService{
 	@Autowired
 	private ITasaRepository repo;
 	
+	/**
+	 * Nombre: inicializarTasaMoneda 
+	 * Descripcion: Invocar metodo para inicializar las
+	 * tasas a la moneda a crear con respecto a la moneda nacional.
+	 *
+	 * @param request     Objeto tipo TasaDto tasaDto
+	 * @return void
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+	
 	@Override
 	public void inicializarTasaMoneda(TasaDto tasaDto) {
 		LOGGER.info(Servicios.MONEDASSERVICEITASAS);

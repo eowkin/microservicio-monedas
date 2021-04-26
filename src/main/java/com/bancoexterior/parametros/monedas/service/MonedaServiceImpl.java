@@ -32,8 +32,6 @@ import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 import com.bancoexterior.parametros.monedas.dto.TasaDto;
 import com.bancoexterior.parametros.monedas.response.Resultado;
 import com.bancoexterior.parametros.monedas.entities.Moneda;
-import com.bancoexterior.parametros.monedas.exception.CodMonedaExistException;
-import com.bancoexterior.parametros.monedas.exception.CodMonedaNoExistException;
 import com.bancoexterior.parametros.monedas.interfase.IRegistrarAuditoriaService;
 import com.bancoexterior.parametros.monedas.model.RegistrarAuditoriaRequest;
 import com.bancoexterior.parametros.monedas.repository.IMonedaRepository;
@@ -68,16 +66,28 @@ public class MonedaServiceImpl implements IMonedaService {
 	@Autowired
 	private ILimitesGeneralesService limitesService;
 	
+	
+	
+	/**
+	 * Nombre: save 
+	 * Descripcion: Invocar metodo para crear la monedas con
+	 * los parametros enviados, a la vez si la moneda nacional
+	 * esta creada, inicializa la tasa y los limites respectivos
+	 * par a la moneda a crear.
+	 *
+	 * @param request     Objeto tipo MonedasRequest
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return MonedaDtoResponseActualizar
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+	
 	@Override
 	public MonedaDtoResponseActualizar save(MonedasRequest monedasRequest, HttpServletRequest requestHTTP) {
 		LOGGER.info(Servicios.MONEDASSERVICEICREAR);
 		LOGGER.info(monedasRequest);
 		String microservicio = Servicios.MONEDAS;
-		
-		
-		if (this.existsById(monedasRequest.getMonedasDtoRequest().getCodMoneda())) {
-			throw new CodMonedaExistException(CodRespuesta.CME2001);
-		}
 		
 		RegistrarAuditoriaRequest reAU = null;
 		
@@ -157,36 +167,18 @@ public class MonedaServiceImpl implements IMonedaService {
 		
 	}
 	
-	@Override
-	//@Transactional
-	public Resultado crear(MonedasRequest monedasRequest) {
-		LOGGER.info(Servicios.MONEDASSERVICEICREAR);
-		Moneda obj = new Moneda();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
-		
-		try {
-			LOGGER.info(monedasRequest);
-			
-			MonedasDtoRequest monedasDtoRequest =  monedasRequest.getMonedasDtoRequest();
-			LOGGER.info(monedasRequest);
-			obj = mapper.map(monedasDtoRequest, Moneda.class);
-			LOGGER.info(obj);
-			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
-			
-			LOGGER.info(obj);
-			obj = repo.save(obj);
-			
-			LOGGER.info(Servicios.MONEDASSERVICEFCREAR);
-			return resultado;
-		} catch (Exception e) {
-			LOGGER.error(e);
-			resultado.setCodigo(CodRespuesta.CME2001);
-			return resultado;
-		}
-		
-	}
+	/**
+	 * Nombre: actualizar 
+	 * Descripcion: Invocar metodo para actualizar la monedas con
+	 * los parametros enviados.
+	 *
+	 * @param request     Objeto tipo MonedasRequest
+	 * @param requestHTTP Objeto tipo HttpServletRequest
+	 * @return MonedaDtoResponseActualizar
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	
 	@Override
 	public MonedaDtoResponseActualizar actualizar(MonedasRequest monedasRequest, HttpServletRequest requestHTTP) {
@@ -254,66 +246,17 @@ public class MonedaServiceImpl implements IMonedaService {
 		return response;
 	}
 	
-	/*
-	@Override
-	public Resultado actualizar(MonedaRequestActualizar monedaRequestActualizar) {
-		
-		LOGGER.info(Servicios.MONEDASSERVICEIACTUALIZAR);
-		Moneda obj = new Moneda();
-		Resultado resultado = new Resultado();
-		resultado.setCodigo(CodRespuesta.C0000);
-		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
-		
-		try {
-			LOGGER.info(monedaRequestActualizar);
-			
-			MonedaDto monedaDto =  monedaRequestActualizar.getMonedaDto();
-			LOGGER.info(monedaDto);
-			obj = mapper.map(monedaDto, Moneda.class);
-			LOGGER.info(obj);
-			obj.setCodUsuario(monedaRequestActualizar.getCodUsuarioMR());
-			
-			
-			LOGGER.info(obj);
-			obj = repo.save(obj);
-			LOGGER.info(Servicios.MONEDASSERVICEFACTUALIZAR);
-			return resultado;
-		} catch (Exception e) {
-			LOGGER.error(e);
-			resultado.setCodigo(CodRespuesta.CME6001);
-			resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.CME6001,CodRespuesta.CME6001));
-			return resultado;
-		}
-	}*/
-	
-	
-	@Override
-	public List<MonedaDto> findAllMonedasDto(MonedaDto monedaDto) {
-		LOGGER.info(Servicios.MONEDASSERVICEICONSULTA);
-		
-		
-		List<MonedaDto> listMonedasDto = null;
-		
-		if(monedaDto.getCodMoneda() == null && monedaDto.getFlagActivo() == null) {
-			listMonedasDto = repo.getAll();
-		}
-		
-		if(monedaDto.getCodMoneda() != null && monedaDto.getFlagActivo() == null) {
-			listMonedasDto = repo.getMonedaByid(monedaDto.getCodMoneda());
-		}
-		
-		if(monedaDto.getCodMoneda() == null && monedaDto.getFlagActivo() != null) {
-			listMonedasDto = repo.getMonedaByFlagActivo(monedaDto.getFlagActivo());
-		}
-		
-		if(monedaDto.getCodMoneda() != null && monedaDto.getFlagActivo() != null) {
-			listMonedasDto = repo.getMonedaByidAndFlag(monedaDto.getCodMoneda(),monedaDto.getFlagActivo());
-		}
-		
-		LOGGER.info(Servicios.MONEDASSERVICEFCONSULTA);
-		return listMonedasDto;
-	}
-	
+	/**
+	 * Nombre: findAllMonedasDtoNuevo 
+	 * Descripcion: Invocar metodo para una busqueda de la monedas con
+	 * los parametros enviados.
+	 *
+	 * @param request     Objeto tipo MonedaDto
+	 * @return List<MonedaDto>
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	@Override
 	public List<MonedaDto> findAllMonedasDtoNuevo(MonedaDto monedaDto) {
 		LOGGER.info(Servicios.MONEDASSERVICEICONSULTA+"NUEVA");
@@ -344,7 +287,17 @@ public class MonedaServiceImpl implements IMonedaService {
 		return listMonedasDto;
 	}
 
-	
+	/**
+	 * Nombre: findById 
+	 * Descripcion: Invocar metodo para una busqueda de una moneda
+	 * por id.
+	 *
+	 * @param String  codMoneda
+	 * @return MonedaDto
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 
 	@Override
 	public MonedaDto findById(String codMoneda) {
@@ -361,12 +314,32 @@ public class MonedaServiceImpl implements IMonedaService {
 		
 	}
 
+	/**
+	 * Nombre: findById 
+	 * Descripcion: Invocar metodo para buscar si existe o no 
+	 * una moneda por id.
+	 * @param String  codMoneda
+	 * @return boolean
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	@Override
 	public boolean existsById(String codMoneda) {
 		return repo.existsById(codMoneda);
 	}
 	
-	
+	/**
+	 * Nombre: consultaMonedas 
+	 * Descripcion: Invocar metodo para la gestion de consulta a realizar
+	 * para la busqueda de monedas con los parametros enviados.
+	 *
+	 * @param request     Objeto tipo MonedasRequest
+	 * @return MonedaDtoResponse
+	 * @version 1.0
+	 * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	@Override
 	public MonedaDtoResponse consultaMonedas(MonedasRequest request) {
 		LOGGER.info(Servicios.MONEDASCONSULTASERVICEI);
@@ -415,9 +388,10 @@ public class MonedaServiceImpl implements IMonedaService {
      * @param  Objeto MonedasRequest
      * @return String  Codigo resultado de la evaluacion.
      * @version 1.0
-     * @author Wilmer Vieira
-	 * @since 16/03/21
-     */
+     * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+    
 	private String validaDatosConsulta(MonedasRequest request) {
 		
 		LOGGER.info(""+request);
@@ -461,9 +435,10 @@ public class MonedaServiceImpl implements IMonedaService {
      * @param  Objeto List<MonedasBD>
      * @return Resultado  Objeto con la información de la evaluacion.
      * @version 1.0
-     * @author Wilmer Vieira
-	 * @since 16/03/21
-    */ 
+     * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
+    
 	
 	private Resultado validaConsulta(List<MonedaDto> listMonedasDto) {
 		Resultado resultado = new Resultado();
@@ -488,9 +463,9 @@ public class MonedaServiceImpl implements IMonedaService {
      * @param  codigo   Codigo de respuesta
      * @param descripcion Descripcion del resultado
      * @version 1.0
-     * @author Wilmer Vieira
-	 * @since 02/03/21
-     */
+     * @author Eugenio Owkin
+	 * @since 12/04/21
+	 */
 	private void registrarAuditoriaBD(RegistrarAuditoriaRequest registrarAu,Resultado response, String errorAdicional) {
 			
 		        registrarA.registrarAuditoria(registrarAu, response.getCodigo(),response.getDescripcion(),errorAdicional);	

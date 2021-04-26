@@ -36,10 +36,6 @@ public class ControllerExceptionHandler {
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(CodRespuesta.CME6000);
     	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES + CodRespuesta.CME6000, CodRespuesta.CME6000)+" "+e.getMessage());
-    	/*
-    	Resultado response = new Resultado();
-        response.setCodigo(CodRespuesta.CME6000);
-    	response.setDescripcion(env.getProperty(Constantes.RES + CodRespuesta.CME6000, CodRespuesta.CME6000)+" "+e.getMessage());*/
     	LOGGER.fatal(e.getMessage(), e);
     	return responseBad;
     }
@@ -64,10 +60,6 @@ public class ControllerExceptionHandler {
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(e.getMessage());
     	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES + e.getMessage(), e.getMessage()));
-    	/*
-    	Resultado response = new Resultado();
-        response.setCodigo(e.getMessage());
-    	response.setDescripcion(env.getProperty(Constantes.RES + e.getMessage(), e.getMessage()));*/
     	return responseBad;
     }
    
@@ -83,10 +75,6 @@ public class ControllerExceptionHandler {
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(e.getMessage());
     	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES + e.getMessage(), e.getMessage()));
-    	/*
-    	Resultado response = new Resultado();
-        response.setCodigo(e.getMessage());
-    	response.setDescripcion(env.getProperty(Constantes.RES + e.getMessage(), e.getMessage()));*/
     	return responseBad;
     }
     
@@ -102,10 +90,6 @@ public class ControllerExceptionHandler {
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(CodRespuesta.CME2005);
     	responseBad.getResultadoBAD().setDescripcion(env.getProperty(Constantes.RES + CodRespuesta.CME2005, CodRespuesta.CME2005));
-    	/*
-    	Resultado response = new Resultado();
-        response.setCodigo(e.getMessage());
-    	response.setDescripcion(env.getProperty(Constantes.RES + e.getMessage(), e.getMessage()));*/
     	return responseBad;
     }
 }

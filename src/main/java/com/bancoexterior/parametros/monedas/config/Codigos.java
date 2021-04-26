@@ -99,27 +99,7 @@ public class Codigos {
 		
 		//monedas
 		public static final String MONEDASURLV1       = "/v1/parametros/monedas";
-		public static final String MONEDAIDURLV1       = "/v1/parametros/monedas/{codMoneda}";
-		public static final String MONEDASPARAMURLV1       = "/v1/parametros/monedas/codMoneda/{codMoneda}/flagActivo/{flagActivo}";
-		public static final String MONEDASFLAGACTIVOURLV1       = "/v1/parametros/monedas/flagActivo/{flagActivo}";
-		public static final String PRUEBAMONEDASURLV1       = "/v11/parametros/monedas";
 		
-		public static final String PRUEBAMONEDAIDURLV1       = "/v11/parametros/monedas/{codMoneda}";
-		
-		//tasas
-		public static final String TASASURLV1       = "/v1/parametros/tasas";
-		public static final String TASASPARAMETERURLV1       = "/v1/parametros/tasas/codMonedaOrigen/{codMonedaOrigen}/codMonedaDestino/{codMonedaDestino}";
-		public static final String TASASPARAMETERCODMONEDAORIGENURLV1       = "/v1/parametros/tasas/codMonedaOrigen/{codMonedaOrigen}";
-		public static final String TASASPARAMETERCODMONEDADESTINOURLV1       = "/v1/parametros/tasas/codMonedaDestino/{codMonedaDestino}";
-		
-		//limitesGenerales
-		public static final String LIMITESGENERALESURLV1       = "/v1/parametros/limites";
-		public static final String LIMITESGENERALESPARAMETERIDURLV1       = "/v1/parametros/limites/codMoneda/{codMoneda}/tipoTransaccion/{tipoTransaccion}/naturaleza/{naturaleza}";
-		public static final String LIMITESGENERALESALLPARAMETERURLV1       = "/v1/parametros/limites/codMoneda/{codMoneda}/tipoTransaccion/{tipoTransaccion}/naturaleza/{naturaleza}/flagActivo/{flagActivo}";
-		
-		//limitesGenerales
-		public static final String LIMITESUSUARIOSURLV1       = "/v1/parametros/limitesusuarios";
-		public static final String LIMITESUSUARIOSPARAMETERIDURLV1       = "/v1/parametros/limitesusuarios/codMoneda/{codMoneda}/tipoTransaccion/{tipoTransaccion}/codIbs/{codIbs}";
 		
 		//Monedas
 		public static final String MONEDAS            = "Convenio1-Moneda";
