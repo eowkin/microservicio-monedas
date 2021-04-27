@@ -20,8 +20,8 @@ public class LimitesGeneralesDto implements Serializable{
 	@JsonProperty("tipoTransaccion")
 	private String tipoTransaccion;
 	
-	@JsonProperty("naturaleza")
-	private String naturaleza;
+	@JsonProperty("tipoCliente")
+	private String tipoCliente;
 	
 	@JsonProperty("montoMin")
 	private BigDecimal montoMin;

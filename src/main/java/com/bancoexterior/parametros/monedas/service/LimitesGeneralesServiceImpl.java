@@ -51,7 +51,7 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 			LimitesGeneralesPk id = new LimitesGeneralesPk();
 			id.setCodMoneda(codMoneda);
 			id.setTipoTransaccion("C");
-			id.setNaturaleza("J");
+			id.setTipoCliente("J");
 			
 			LimitesGenerales limites = new LimitesGenerales();
 			limites.setId(id);
@@ -69,7 +69,7 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 			LimitesGeneralesPk id1 = new LimitesGeneralesPk();
 			id1.setCodMoneda(codMoneda);
 			id1.setTipoTransaccion("V");
-			id1.setNaturaleza("J");
+			id1.setTipoCliente("J");
 			
 			LimitesGenerales limites1 = new LimitesGenerales();
 			
@@ -88,7 +88,7 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 			LimitesGeneralesPk id2 = new LimitesGeneralesPk();
 			id2.setCodMoneda(codMoneda);
 			id2.setTipoTransaccion("C");
-			id2.setNaturaleza("N");
+			id2.setTipoCliente("N");
 			
 			LimitesGenerales limites2 = new LimitesGenerales();
 			limites2.setId(id2);
@@ -106,7 +106,7 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 			LimitesGeneralesPk id3 = new LimitesGeneralesPk();
 			id3.setCodMoneda(codMoneda);
 			id3.setTipoTransaccion("V");
-			id3.setNaturaleza("N");
+			id3.setTipoCliente("N");
 			
 			LimitesGenerales limites3 = new LimitesGenerales();
 			limites3.setId(id3);

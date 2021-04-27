@@ -107,34 +107,39 @@ public class MonedaServiceImpl implements IMonedaService {
 			
 			
 			MonedasDtoRequest monedasDtoRequest =  monedasRequest.getMonedasDtoRequest();
-			LOGGER.info(monedasRequest);
+			//LOGGER.info(monedasRequest);
 			obj = mapper.map(monedasDtoRequest, Moneda.class);
-			LOGGER.info(monedasRequest);
+			//LOGGER.info(monedasRequest);
 			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
 			//obj.setCodUsuario("E66666666666666666666666666666");
-			LOGGER.info(obj);
+			//LOGGER.info(obj);
 			
-			if(monedasDtoRequest.equals(codmonedabs)) {
+			if(monedasDtoRequest.getCodMoneda().equals(codmonedabs)) {
 				obj = repo.save(obj);
 				
 			}else {
 				obj = repo.save(obj);
 				
 				
-				LOGGER.info("No es moneda nacional, se crea y se inicializa tasa y limites");
-				//llamar inicializar Tasa
-				TasaDto tasaDto = new TasaDto();
-				tasaDto.setCodMonedaOrigen(monedasRequest.getMonedasDtoRequest().getCodMoneda());
-				tasaDto.setCodMonedaDestino(codmonedabs);
-				tasaDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
-				tasaDto.setMontoTasa(BigDecimal.ZERO);
-				tasaService.inicializarTasaMoneda(tasaDto);
+				if(this.existsById(codmonedabs)) {
+					LOGGER.info("No es moneda nacional, se crea y se inicializa tasa y limites");
+					//llamar inicializar Tasa
+					TasaDto tasaDto = new TasaDto();
+					tasaDto.setCodMonedaOrigen(monedasRequest.getMonedasDtoRequest().getCodMoneda());
+					tasaDto.setCodMonedaDestino(codmonedabs);
+					tasaDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
+					tasaDto.setMontoTasa(BigDecimal.ZERO);
+					tasaService.inicializarTasaMoneda(tasaDto);
+					
+					//llamar inicializar limites generales
+					LimitesGeneralesDto limitesGeneralesDto = new LimitesGeneralesDto();
+					limitesGeneralesDto.setCodMoneda(monedasRequest.getMonedasDtoRequest().getCodMoneda());
+					limitesGeneralesDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
+					limitesService.inicializarLimitesGeneralesMoneda(limitesGeneralesDto);
 				
-				//llamar inicializar limites generales
-				LimitesGeneralesDto limitesGeneralesDto = new LimitesGeneralesDto();
-				limitesGeneralesDto.setCodMoneda(monedasRequest.getMonedasDtoRequest().getCodMoneda());
-				limitesGeneralesDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
-				limitesService.inicializarLimitesGeneralesMoneda(limitesGeneralesDto);
+				}
+				
+				
 				
 			}
 			
@@ -292,7 +297,7 @@ public class MonedaServiceImpl implements IMonedaService {
 	 * Descripcion: Invocar metodo para una busqueda de una moneda
 	 * por id.
 	 *
-	 * @param String  codMoneda
+	 * @param codMoneda String  
 	 * @return MonedaDto
 	 * @version 1.0
 	 * @author Eugenio Owkin
@@ -315,10 +320,10 @@ public class MonedaServiceImpl implements IMonedaService {
 	}
 
 	/**
-	 * Nombre: findById 
+	 * Nombre: existsById 
 	 * Descripcion: Invocar metodo para buscar si existe o no 
 	 * una moneda por id.
-	 * @param String  codMoneda
+	 * @param codMoneda String  
 	 * @return boolean
 	 * @version 1.0
 	 * @author Eugenio Owkin

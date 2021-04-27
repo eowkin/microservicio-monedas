@@ -24,9 +24,9 @@ public class LimitesGeneralesPk implements Serializable{
 	private String tipoTransaccion;
 	 
 	@NotEmpty(message = "no puede ser vacio")
-	@Column(name= "naturaleza", nullable = false)
+	@Column(name= "tipo_cliente", nullable = false)
 	@Size(min = 1, max = 1)
-	private String naturaleza; 
+	private String tipoCliente; 
 		 
 	
 	

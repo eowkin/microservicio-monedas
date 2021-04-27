@@ -101,7 +101,7 @@ public class MonedaController {
 	public ResponseEntity<Object> crearMoneda(@Valid @RequestBody MonedasRequest monedasRequest, BindingResult result,
 			HttpServletRequest requestHTTP) {
 
-		LOGGER.info(Servicios.MONEDASSERVICEI);
+		LOGGER.info(Servicios.MONEDASCONTROLLERI);
 		LOGGER.info(monedasRequest);
 		
 		monedaValidator.validarCrear(monedasRequest, result);
@@ -141,7 +141,7 @@ public class MonedaController {
 	public ResponseEntity<Object> actualizarMoneda(@Valid @RequestBody MonedasRequest monedasRequest,
 			BindingResult result, HttpServletRequest requestHTTP) {
 
-		LOGGER.info(Servicios.MONEDASSERVICEI);
+		LOGGER.info(Servicios.MONEDASCONTROLLERI);
 		LOGGER.info(monedasRequest);
 		
 		monedaValidator.validarActualizar(monedasRequest, result);

@@ -29,7 +29,7 @@ public class MonedaValidatorImpl implements IMonedaValidator{
 	 * antes de procesar al endPoint crearMoneda.
 	 *
 	 * @param request     Objeto tipo MonedasRequest
-	 * @param request     Objeto tipo BindingResult
+	 * @param result     Objeto tipo BindingResult
 	 * @return void
 	 * @version 1.0
 	 * @author Eugenio Owkin
@@ -58,7 +58,7 @@ public class MonedaValidatorImpl implements IMonedaValidator{
 	 * antes de procesar el endPoint actualizarMoneda.
 	 *
 	 * @param request     Objeto tipo MonedasRequest
-	 * @param request     Objeto tipo BindingResult
+	 * @param result     Objeto tipo BindingResult
 	 * @return void
 	 * @version 1.0
 	 * @author Eugenio Owkin
