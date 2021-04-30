@@ -46,7 +46,7 @@ public class LimitesGeneralesServiceImpl implements ILimitesGeneralesService{
 		LOGGER.info(Servicios.MONEDASSERVICEILIMITES);
 		
 		try {
-			List<LimitesGenerales> listLimites = new ArrayList<LimitesGenerales>();
+			List<LimitesGenerales> listLimites = new ArrayList<>();
 			String codMoneda = limitesGeneralesDto.getCodMoneda();
 			LimitesGeneralesPk id = new LimitesGeneralesPk();
 			id.setCodMoneda(codMoneda);

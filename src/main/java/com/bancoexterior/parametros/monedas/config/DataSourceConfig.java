@@ -45,29 +45,29 @@ public class DataSourceConfig {
     	
     	
     	
-    	LOGGER.info("ambiente: "+ambiente);
-    	LOGGER.info("usuario: "+usuario);
-    	LOGGER.info("password: "+password);
-    	LOGGER.info("sconfigDesKey: "+sconfigDesKey);
-    	LOGGER.info("sconfigProKey: "+sconfigProKey);
-    	LOGGER.info("seedMoneda: "+seedMoneda);
+    	LOGGER.info(ambiente);
+    	LOGGER.info(usuario);
+    	LOGGER.info(password);
+    	LOGGER.info(sconfigDesKey);
+    	LOGGER.info(sconfigProKey);
+    	LOGGER.info(seedMoneda);
     	
     	
     	String usuarioEncryptBanco = MiCipher.encrypt("C14405", sconfigDesKey);
     	String passwordEncryptBanco = MiCipher.encrypt("Cumana01*", sconfigDesKey);
-    	LOGGER.info("usuarioEncryptBanco: "+usuarioEncryptBanco);
-    	LOGGER.info("passwordEncryptBanco: "+passwordEncryptBanco);
+    	LOGGER.info(usuarioEncryptBanco);
+    	LOGGER.info(passwordEncryptBanco);
     	
     	
     	String usuarioDecrypt = MiCipher.decrypt(usuario, sconfigDesKey);
     	String passwordDecrypt = MiCipher.decrypt(password, sconfigDesKey);
     	
-    	LOGGER.info("usuarioDecrypt: "+usuarioDecrypt);
-    	LOGGER.info("passwordDecrypt: "+passwordDecrypt);
+    	LOGGER.info(usuarioDecrypt);
+    	LOGGER.info(passwordDecrypt);
     	
-        DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName("org.postgresql.Driver");
-        //dataSourceBuilder.url("jdbc:postgresql://localhost:5432/Convenio1");
+        
+    	DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.driverClassName("org.postgresql.Driver");	
         dataSourceBuilder.url("jdbc:postgresql://172.19.148.50:5432/Convenio1");
         dataSourceBuilder.username(usuarioDecrypt);
         dataSourceBuilder.password(passwordDecrypt);

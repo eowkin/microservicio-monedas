@@ -10,18 +10,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 @Component
 public class Mapper {
 
-	ModelMapper mapper = new ModelMapper();
+	ModelMapper mapperUtiliti = new ModelMapper();
 	
 	ObjectMapper mapeador = new ObjectMapper();
 	
-	public <T> T jsonToClass(String json, Class<T> clazz) throws JsonMappingException, JsonProcessingException {
+	public <T> T jsonToClass(String json, Class<T> clazz) throws JsonProcessingException {
         return mapeador.readValue(json, clazz);
     }
 	
@@ -44,7 +43,7 @@ public class Mapper {
      * @return new object of <code>outClass</code> type.
      */
     public <D, T> D map(T entity, Class<D> outClass) {
-        return mapper.map(entity, outClass);
+        return mapperUtiliti.map(entity, outClass);
     }
     
     /**

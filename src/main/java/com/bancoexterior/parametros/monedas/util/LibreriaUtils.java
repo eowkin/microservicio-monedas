@@ -20,9 +20,16 @@ import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
 
 
 @Component
-public class Utils {
+public class LibreriaUtils {
 
-	private static final Logger LOGGER = LogManager.getLogger(Utils.class);
+	private static final Logger LOGGER = LogManager.getLogger(LibreriaUtils.class);
+	
+	
+	private LibreriaUtils() {
+		
+	}
+	
+	
 	
 	/**
      * Nombre:                  getHttpStatus
@@ -85,7 +92,7 @@ public class Utils {
 		    		   .withResolverStyle(ResolverStyle.STRICT));
 		      return true;
 		      } catch (DateTimeParseException e) {
-		    	  LOGGER.info("Error: "+e);
+		    	  LOGGER.info(e);
 		          return false;
 		      }
 	}

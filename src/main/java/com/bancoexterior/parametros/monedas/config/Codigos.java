@@ -1,19 +1,27 @@
 package com.bancoexterior.parametros.monedas.config;
 
-import lombok.Data;
-
 public class Codigos {
 
-	@Data
+	
 	public class Ambientes{
+		
+		private Ambientes() {
+			super();
+		}
+		
 		
 		public static final String DESARROLLO = "des";
 		public static final String CALIDAD    = "qa";
 		public static final String PRODUCCION = "pro";
 	}
 	
-	@Data
+	
 	public class CodRespuesta{
+		
+		private CodRespuesta() {
+			super();
+		}
+		
 		//ok
 		public static final String C0000 = "0000";
 		public static final String C0001 = "0001";
@@ -46,14 +54,21 @@ public class Codigos {
 		
 	}
 	
-	@Data
+	
 	public class Annotation{
-		 public static final String OBJECTDEFAULT     = "[Objeto vacio]";
+		private Annotation() {
+			super();
+		}
+		
+		public static final String OBJECTDEFAULT     = "[Objeto vacio]";
 		 public static final String FECHADEFAULT      = "[Fecha invalida]";
 	 }
 	
-	@Data
+	
 	public class ParamConfig{
+		private ParamConfig() {
+			super();
+		}
 		
 		public static final String CANAL           = "^[a-zA-Z\\-0-9]{1,4}$";
 		public static final String IDSESIONVALID   = "uuuuMMddHHmmss";
@@ -66,8 +81,12 @@ public class Codigos {
 		
 	}
 	
-	@Data
+	
 	public class Constantes{
+		
+		private Constantes() {
+			super();
+		}
 		
 		public static final String MONEDADEFAULT                      = "000";
 		public static final String TRUE                               = "true";
@@ -94,8 +113,12 @@ public class Codigos {
 	}
 	
 	
-	@Data
+	
 	public class Servicios{
+		
+		private Servicios() {
+			super();
+		}
 		
 		//monedas
 		public static final String MONEDASURLV1       = "/v1/parametros/monedas";
@@ -130,8 +153,12 @@ public class Codigos {
 		
 	}
 	
-	@Data
+	
 	public class ExceptionMessages{
+		
+		private ExceptionMessages() {
+			super();
+		}
 		
 		public static final String UNIRESTHTTPE         = "HttpStatusCodeException: %1$s";
 		public static final String UNIRESTBODYE         = "ResponseBody: %1$s";
@@ -142,15 +169,31 @@ public class Codigos {
 	}
 		
 	
-	@Data
-	public class InfoMessages {
 	
+	public class InfoMessages {
+		
+		private InfoMessages() {
+			super();
+		}
+		
 		// Auditoria Service
     	public static final String AUREQUEST                = "Request = [{}]";
     	public static final String AUPRINTINFO              = "registrar Auditoria respuesta: ";
 	}
+	
+	
+	public class SQLUtils{
 		
+		private SQLUtils() {
+			super();
+		}
 		
+		public static final String SELECTMONEDA ="SELECT cod_moneda, descripcion, cod_alterno, flag_activo, cod_usuario, fecha_modificacion "
+				+ "FROM \"Convenio1\".\"Monedas\" "
+				+ "where cod_moneda = (case when ?1 = '' then cod_moneda else ?1 end) "
+				+ "and "
+				+ "(case when  ?2 = 'si' then flag_activo= ?3 else flag_activo = flag_activo end) ";
+	}
 		
 	
 	

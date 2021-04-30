@@ -22,7 +22,7 @@ public class MonedaDtoResponse implements Serializable{
 	public MonedaDtoResponse(){
 		super();
 		this.resultado = new Resultado();
-		this.listMonedasDto = new ArrayList<MonedaDto>();
+		this.listMonedasDto = new ArrayList<>();
 	}
 	
 	public void addListMonedasDto(MonedaDto monedaDto) {

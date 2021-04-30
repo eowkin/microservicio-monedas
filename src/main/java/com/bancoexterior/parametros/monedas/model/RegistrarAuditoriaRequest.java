@@ -3,13 +3,12 @@ package com.bancoexterior.parametros.monedas.model;
 import javax.servlet.http.HttpServletRequest;
 
 import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
-import com.bancoexterior.parametros.monedas.dto.MonedaRequestActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 
-import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
+
+
 public class RegistrarAuditoriaRequest {
 		
 	private String fecha;
@@ -35,9 +34,6 @@ public class RegistrarAuditoriaRequest {
 	
 	public RegistrarAuditoriaRequest(MonedasRequest request, String microservicio,HttpServletRequest requestHTTP) {
 		
-		//log.info("RegistrarAuditoriaRequest");
-		//log.info("requestHTTP.getHeader(Constantes.XCLIENTIP) _"+requestHTTP.getHeader(Constantes.XCLIENTIP));
-		//log.info("requestHTTP.getRemoteAddr(): "+requestHTTP.getRemoteAddr());
 		
 		this.fecha                = Constantes.BLANK;
 		this.idCliente            = Constantes.BLANK;
@@ -56,28 +52,7 @@ public class RegistrarAuditoriaRequest {
 		
 	}
 	
-	public RegistrarAuditoriaRequest(MonedaRequestActualizar request, String microservicio,HttpServletRequest requestHTTP) {
-		
-		//log.info("RegistrarAuditoriaRequest");
-		//log.info("requestHTTP.getHeader(Constantes.XCLIENTIP) _"+requestHTTP.getHeader(Constantes.XCLIENTIP));
-		//log.info("requestHTTP.getRemoteAddr(): "+requestHTTP.getRemoteAddr());
-		
-		this.fecha                = Constantes.BLANK;
-		this.idCliente            = Constantes.BLANK;
-		this.ipOrigen             = requestHTTP.getHeader(Constantes.XCLIENTIP) != null ? requestHTTP.getHeader(Constantes.XCLIENTIP) : requestHTTP.getRemoteAddr();
-		this.usuario              = request.getCodUsuarioMR();
-		this.terminal             = Constantes.TERMINAL;
-		this.microservicio        = microservicio;
-		this.referencia           = Constantes.N_A;
-		this.codigoResultado      = Constantes.BLANK;
-		this.descripcionResultado = Constantes.BLANK;
-		this.detalleError         = Constantes.BLANK;
-		this.idCanal              = request.getCanalCM();
-		this.idSesion             = request.getIdSesionMR();
-		this.telefono             = Constantes.BLANK;
-		this.medio                = Constantes.TERMINAL;
-		
-	}
+	
 	
 	public String getMedio() {
 		return medio;

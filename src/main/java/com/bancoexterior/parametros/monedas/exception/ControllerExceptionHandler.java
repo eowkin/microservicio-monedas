@@ -30,7 +30,7 @@ public class ControllerExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseBad ExceptionHandler(Exception e) {
+    public ResponseBad exceptionHandler(Exception e) {
     	LOGGER.info("ExceptionHandler");
         
     	ResponseBad responseBad = new ResponseBad();
@@ -55,7 +55,7 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public ResponseBad badRequest(Exception e) {
     	LOGGER.info("badRequest");
-    	LOGGER.info("message: "+e.getMessage());
+    	LOGGER.info(e.getMessage());
     	
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(e.getMessage());
@@ -70,7 +70,7 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public ResponseBad badRequestUnprocessable(Exception e) {
     	LOGGER.info("badRequestUnprocessable");
-    	LOGGER.info("message: "+e.getMessage());
+    	LOGGER.info(e.getMessage());
     	
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(e.getMessage());
@@ -85,7 +85,7 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public ResponseBad notFound(Exception e) {
     	LOGGER.info("notFound");
-    	LOGGER.info("message: "+e.getMessage());
+    	LOGGER.info(e.getMessage());
     	
     	ResponseBad responseBad = new ResponseBad();
     	responseBad.getResultadoBAD().setCodigo(CodRespuesta.CME2005);

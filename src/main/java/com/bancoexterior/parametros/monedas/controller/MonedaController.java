@@ -23,7 +23,7 @@ import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponse;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponseActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
 import com.bancoexterior.parametros.monedas.service.IMonedaService;
-import com.bancoexterior.parametros.monedas.util.Utils;
+import com.bancoexterior.parametros.monedas.util.LibreriaUtils;
 import com.bancoexterior.parametros.monedas.validator.IMonedaValidator;
 
 
@@ -69,7 +69,7 @@ public class MonedaController {
 		HttpStatus estatusCM;
 
 		monedaDtoResponse = monedaService.consultaMonedas(monedasRequest);
-		estatusCM = Utils.getHttpStatus(monedaDtoResponse.getResultado().getCodigo().trim());
+		estatusCM = LibreriaUtils.getHttpStatus(monedaDtoResponse.getResultado().getCodigo().trim());
 
 		LOGGER.info(estatusCM);
 		LOGGER.info(monedaDtoResponse);
@@ -110,7 +110,7 @@ public class MonedaController {
 		
 		response = monedaService.save(monedasRequest, requestHTTP);
 		LOGGER.info(response);
-		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
+		estatusCM = LibreriaUtils.getHttpStatus(response.getResultado().getCodigo().trim());
 		LOGGER.info(estatusCM);
 		LOGGER.info(Servicios.MONEDASCONTROLLERF);
 		
@@ -150,7 +150,7 @@ public class MonedaController {
 		
 		response = monedaService.actualizar(monedasRequest, requestHTTP);
 		LOGGER.info(response);
-		estatusCM = Utils.getHttpStatus(response.getResultado().getCodigo().trim());
+		estatusCM = LibreriaUtils.getHttpStatus(response.getResultado().getCodigo().trim());
 		LOGGER.info(estatusCM);
 		LOGGER.info(Servicios.MONEDASCONTROLLERF);
 		

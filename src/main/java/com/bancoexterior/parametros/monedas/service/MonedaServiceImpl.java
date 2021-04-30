@@ -101,24 +101,19 @@ public class MonedaServiceImpl implements IMonedaService {
 		
 		resultado.setCodigo(CodRespuesta.C0000);
 		resultado.setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
-		//monedasDtoRequest.getResultado().setDescripcion(env.getProperty(Constantes.RES+CodRespuesta.C0000,CodRespuesta.C0000).replace(Constantes.ERROR, Constantes.BLANK));
 		try {
 			
 			
 			
 			MonedasDtoRequest monedasDtoRequest =  monedasRequest.getMonedasDtoRequest();
-			//LOGGER.info(monedasRequest);
 			obj = mapper.map(monedasDtoRequest, Moneda.class);
-			//LOGGER.info(monedasRequest);
 			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
-			//obj.setCodUsuario("E66666666666666666666666666666");
-			//LOGGER.info(obj);
 			
 			if(monedasDtoRequest.getCodMoneda().equals(codmonedabs)) {
-				obj = repo.save(obj);
+				repo.save(obj);
 				
 			}else {
-				obj = repo.save(obj);
+				repo.save(obj);
 				
 				
 				if(this.existsById(codmonedabs)) {
@@ -156,13 +151,13 @@ public class MonedaServiceImpl implements IMonedaService {
 		resultado.setCodigo(codigo);
 		resultado.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
 		
-		if(reAU != null) {
-			reAU.setIdCliente(Constantes.RIF);
-			reAU.setCedula(Constantes.CEDULA);
-			reAU.setTelefono(Constantes.TELEFONO);
-			reAU.setIdCanal(monedasRequest.getCanalCM());
-			registrarAuditoriaBD(reAU, resultado, errorM);
-		}
+		
+		reAU.setIdCliente(Constantes.RIF);
+		reAU.setCedula(Constantes.CEDULA);
+		reAU.setTelefono(Constantes.TELEFONO);
+		reAU.setIdCanal(monedasRequest.getCanalCM());
+		registrarAuditoriaBD(reAU, resultado, errorM);
+		
 		
 		LOGGER.info(Servicios.MONEDASSERVICEFCREAR);
 		return response;
@@ -216,15 +211,13 @@ public class MonedaServiceImpl implements IMonedaService {
 			
 			
 			
-			//MonedaDto monedaDto =  monedaRequestActualizar.getMonedaDto();
 			LOGGER.info(monedaDto);
 			obj = mapper.map(monedaDto, Moneda.class);
 			LOGGER.info(obj);
 			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
-			//obj.setCodUsuario("E66666666666666666666666666666");
 			
 			LOGGER.info(obj);
-			obj = repo.save(obj);
+			repo.save(obj);
 			
 			response.setResultado(resultado);
 			
@@ -239,13 +232,13 @@ public class MonedaServiceImpl implements IMonedaService {
 		resultado.setCodigo(codigo);
 		resultado.setDescripcion(env.getProperty(Constantes.RES+codigo,codigo).replace(Constantes.ERROR, errorM));
 		
-		if(reAU != null) {
-			reAU.setIdCliente(Constantes.RIF);
-			reAU.setCedula(Constantes.CEDULA);
-			reAU.setTelefono(Constantes.TELEFONO);
-			reAU.setIdCanal(monedasRequest.getCanalCM());
-			registrarAuditoriaBD(reAU, resultado, errorM);
-		}
+		
+		reAU.setIdCliente(Constantes.RIF);
+		reAU.setCedula(Constantes.CEDULA);
+		reAU.setTelefono(Constantes.TELEFONO);
+		reAU.setIdCanal(monedasRequest.getCanalCM());
+		registrarAuditoriaBD(reAU, resultado, errorM);
+		
 		LOGGER.info(Servicios.MONEDASSERVICEFACTUALIZAR);
 		
 		return response;
@@ -281,7 +274,7 @@ public class MonedaServiceImpl implements IMonedaService {
 		
 		List<Moneda> listMonedas = repo.getMonedaByidNuevo(codMoneda, flag, flagActivo);
 		
-		List<MonedaDto> listMonedasDto = new ArrayList<MonedaDto>();
+		List<MonedaDto> listMonedasDto = new ArrayList<>();
 
 		for (Moneda moneda : listMonedas) {
 
@@ -354,14 +347,11 @@ public class MonedaServiceImpl implements IMonedaService {
 		String errorCM = Constantes.BLANK;
 		List<MonedaDto> listMonedasDto;
 		MonedaDto monedaDto =  new MonedaDto(request);
-		MonedasDtoRequest monedasDtoRequest  = request.getMonedasDtoRequest();
 		try {
 			
 			codigo = validaDatosConsulta(request);
 			LOGGER.info(codigo);
 			if(codigo.equalsIgnoreCase(CodRespuesta.C0000)) {
-				//consulta BD
-				//listMonedasDto = this.findAllMonedasDto(monedaDto);
 				listMonedasDto = this.findAllMonedasDtoNuevo(monedaDto);
 				monedaDtoResponse.setListMonedasDto(listMonedasDto);
 				
@@ -399,7 +389,7 @@ public class MonedaServiceImpl implements IMonedaService {
     
 	private String validaDatosConsulta(MonedasRequest request) {
 		
-		LOGGER.info(""+request);
+		LOGGER.info(request);
 
 		String codigo = CodRespuesta.C0000;
 		String codMoneda;
