@@ -1,6 +1,6 @@
 package com.bancoexterior.parametros.monedas.service;
 
-import java.math.BigDecimal;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -23,13 +23,11 @@ import org.springframework.stereotype.Service;
 import com.bancoexterior.parametros.monedas.config.Codigos.CodRespuesta;
 import com.bancoexterior.parametros.monedas.config.Codigos.Constantes;
 import com.bancoexterior.parametros.monedas.config.Codigos.Servicios;
-import com.bancoexterior.parametros.monedas.dto.LimitesGeneralesDto;
 import com.bancoexterior.parametros.monedas.dto.MonedaDto;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponse;
 import com.bancoexterior.parametros.monedas.dto.MonedaDtoResponseActualizar;
 import com.bancoexterior.parametros.monedas.dto.MonedasDtoRequest;
 import com.bancoexterior.parametros.monedas.dto.MonedasRequest;
-import com.bancoexterior.parametros.monedas.dto.TasaDto;
 import com.bancoexterior.parametros.monedas.response.Resultado;
 import com.bancoexterior.parametros.monedas.entities.Moneda;
 import com.bancoexterior.parametros.monedas.interfase.IRegistrarAuditoriaService;
@@ -60,11 +58,6 @@ public class MonedaServiceImpl implements IMonedaService {
 	@Value("${microservicio.codmonedabs}")
 	private String codmonedabs;
 
-	@Autowired
-	private ITasaService tasaService;
-	
-	@Autowired
-	private ILimitesGeneralesService limitesService;
 	
 	
 	
@@ -108,36 +101,7 @@ public class MonedaServiceImpl implements IMonedaService {
 			MonedasDtoRequest monedasDtoRequest =  monedasRequest.getMonedasDtoRequest();
 			obj = mapper.map(monedasDtoRequest, Moneda.class);
 			obj.setCodUsuario(monedasRequest.getCodUsuarioMR());
-			
-			if(monedasDtoRequest.getCodMoneda().equals(codmonedabs)) {
-				repo.save(obj);
-				
-			}else {
-				repo.save(obj);
-				
-				
-				if(this.existsById(codmonedabs)) {
-					LOGGER.info("No es moneda nacional, se crea y se inicializa tasa y limites");
-					//llamar inicializar Tasa
-					TasaDto tasaDto = new TasaDto();
-					tasaDto.setCodMonedaOrigen(monedasRequest.getMonedasDtoRequest().getCodMoneda());
-					tasaDto.setCodMonedaDestino(codmonedabs);
-					tasaDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
-					tasaDto.setMontoTasa(BigDecimal.ZERO);
-					tasaService.inicializarTasaMoneda(tasaDto);
-					
-					//llamar inicializar limites generales
-					LimitesGeneralesDto limitesGeneralesDto = new LimitesGeneralesDto();
-					limitesGeneralesDto.setCodMoneda(monedasRequest.getMonedasDtoRequest().getCodMoneda());
-					limitesGeneralesDto.setCodUsuario(monedasRequest.getCodUsuarioMR());
-					limitesService.inicializarLimitesGeneralesMoneda(limitesGeneralesDto);
-				
-				}
-				
-				
-				
-			}
-			
+			repo.save(obj);
 			response.setResultado(resultado);
 		
 		} catch (Exception e) {
